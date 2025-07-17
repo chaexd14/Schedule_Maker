@@ -52,7 +52,7 @@ function App() {
       {/* Buttons */}
       <div className="w-fit flex flex-col gap-3 border border-blue-400 pointer-events-auto">
         <button className="normal-button">Add</button>
-        <button className="normal-button">Setting</button>
+        <button className="normal-button">Settings</button>
         <button className="normal-button">Download</button>
       </div>
     </div>
