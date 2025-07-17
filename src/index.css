@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+   font-family: 'customFont';
+   src: url('./fonts/own.ttf') format('truetype');
+   font-weight: normal;
+   font-style: normal;
+}
+
+@layer components {
+   .custom-font{
+      font-family: 'customFont', sans-serif;
+   }
+
+   .normal-button{
+    @apply bg-[#6246EA] custom-font text-white text-xl font-medium py-2 px-8 rounded-lg
+   }
+}
