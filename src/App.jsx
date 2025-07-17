@@ -50,10 +50,10 @@ function App() {
       </div>
 
       {/* Buttons */}
-      <div className="w-fit flex flex-col gap-3 border border-blue-400 pointer-events-auto">
-        <button className="normal-button">Add</button>
-        <button className="normal-button">Settings</button>
-        <button className="normal-button">Download</button>
+      <div className="w-fit flex flex-col gap-3 border border-blue-400">
+        <button className="normal-button pointer-events-auto">Add</button>
+        <button className="normal-button pointer-events-auto">Settings</button>
+        <button className="normal-button pointer-events-auto">Download</button>
       </div>
     </div>
   </section>
