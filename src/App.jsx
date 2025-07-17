@@ -1,6 +1,7 @@
 import './App.css'
 import Squares from "./components/ui/Squares/Squares"
 import { Times } from './data/time'
+import { Day } from './data/day'
 
 function App() {
   return (
@@ -18,32 +19,28 @@ function App() {
   </div>
 
   {/* Main content — allow hover to pass through */}
-  <section className="relative z-10 h-screen w-full flex flex-col p-10 gap-4 pointer-events-none">
+  <section className="relative z-10 h-screen w-full flex flex-col p-10 gap-3 pointer-events-none">
     
     <div className="h-fit w-full flex justify-center">
-      <h1 className="custom-font text-6xl text-center font-semibold text-[#2B2C34] pointer-events-auto">
-        Schedule
+      <h1 className="custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto">
+        My <span className='text-[#6246EA] font-extrabold text-7xl'>Schedule</span>
       </h1>
     </div>
 
     <div className="flex-1 flex flex-row gap-10 min-h-0">
       {/* Scrollable area */}
-      <div className="flex-1 border-4 bg-white border-black rounded-lg pt-8 px-14 box-border flex flex-col min-h-0 pointer-events-auto">
+      <div className="flex-1 border-4 bg-white/70 border-[#2B2C34] rounded-lg pt-8 px-14 box-border flex flex-col min-h-0 pointer-events-auto gap-2">
         
-        <div className="h-fit w-full border border-red-400">
+        <div className="h-fit w-full">
           <ul className="w-full flex justify-between text-center">
-            <li className="w-full border border-red-400">Monday</li>
-            <li className="w-full border border-red-400">Tuesday</li>
-            <li className="w-full border border-red-400">Wednesday</li>
-            <li className="w-full border border-red-400">Thursday</li>
-            <li className="w-full border border-red-400">Friday</li>
-            <li className="w-full border border-red-400">Saturday</li>
-            <li className="w-full border border-red-400">Sunday</li>
+            {Day.map((d,i)=>(
+              <li className="w-full custom-font text-[26px] font-semibold text-[#2B2C34] border border-red-400" key={i}>{d.day}</li>
+            ))}
           </ul>
         </div>
 
-        <div className="flex-1 overflow-auto border border-blue-400">
-          <div className="h-[1300px]">
+        <div className="flex-1 overflow-auto scrollbar scrollbar-thumb-[#6246EA] scrollbar-track-transparent border-t-4 border-x-4 border-[#2B2C34] rounded-t-md">
+          <div className="h-[1300px] bg-white">
             {/* Scrollable content */}
           </div>
         </div>
