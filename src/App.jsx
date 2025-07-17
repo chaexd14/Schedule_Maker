@@ -32,8 +32,8 @@ function App() {
         
         <div className="h-fit w-full border border-red-400">
           <ul className="w-full flex justify-between text-center">
-            <li className="w-full border border-blue-400">Monday</li>
-            <li className="w-full border border-blue-400">Tuesday</li>
+            <li className="w-full border border-red-400">Monday</li>
+            <li className="w-full border border-red-400">Tuesday</li>
             <li className="w-full border border-red-400">Wednesday</li>
             <li className="w-full border border-red-400">Thursday</li>
             <li className="w-full border border-red-400">Friday</li>
@@ -52,7 +52,7 @@ function App() {
       {/* Buttons */}
       <div className="w-fit flex flex-col gap-3 border border-blue-400 pointer-events-auto">
         <button className="normal-button">Add</button>
-        <button className="normal-button">Setting</button>
+        <button className="normal-button">Settings</button>
         <button className="normal-button">Download</button>
       </div>
     </div>
