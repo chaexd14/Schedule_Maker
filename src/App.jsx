@@ -1,63 +1,158 @@
-import './App.css'
-import Squares from "./components/ui/Squares/Squares"
-import { Times } from './data/time'
-import { Day } from './data/day'
+import "./App.css";
+import Squares from "./components/ui/Squares/Squares";
+import { Times } from "./data/time";
+import { Day } from "./data/day";
+import { useState } from "react";
 
 function App() {
+  const [schedForm, setschedForm] = useState(false);
+
+  const toggleForm = () => {
+    setschedForm((prev) => !prev);
+  };
+
   return (
     <>
-<main className="h-screen w-full bg-[#FFFFFE] relative">
-  {/* Hoverable background */}
-  <div className="absolute inset-0 h-full w-full z-0">
-    <Squares 
-      speed={0.2} 
-      squareSize={40}
-      direction="diagonal"
-      borderColor="#D1D1E9"
-      hoverFillColor="#D1D1E9"
-    />
-  </div>
-
-  {/* Main content — allow hover to pass through */}
-  <section className="relative z-10 h-screen w-full flex flex-col p-10 gap-3 pointer-events-none">
-    
-    <div className="h-fit w-full flex justify-center">
-      <h1 className="custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto">
-        My <span className='text-[#6246EA] font-extrabold text-7xl'>Schedule</span>
-      </h1>
-    </div>
-
-    <div className="flex-1 flex flex-row gap-10 min-h-0">
-      {/* Scrollable area */}
-      <div className="flex-1 border-4 bg-white/70 border-[#2B2C34] rounded-lg pt-8 px-14 box-border flex flex-col min-h-0 pointer-events-auto gap-2">
-        
-        <div className="h-fit w-full">
-          <ul className="w-full flex justify-between text-center">
-            {Day.map((d,i)=>(
-              <li className="w-full custom-font text-[26px] font-semibold text-[#2B2C34] border border-red-400" key={i}>{d.day}</li>
-            ))}
-          </ul>
+      <main className="h-screen w-full bg-[#FFFFFE] relative">
+        {/* Hoverable background */}
+        <div className="absolute inset-0 h-full w-full z-0">
+          <Squares
+            speed={0.2}
+            squareSize={40}
+            direction="diagonal"
+            borderColor="#D1D1E9"
+            hoverFillColor="#D1D1E9"
+          />
         </div>
 
-        <div className="flex-1 overflow-auto scrollbar scrollbar-thumb-[#6246EA] scrollbar-track-transparent border-t-4 border-x-4 border-[#2B2C34] rounded-t-md">
-          <div className="h-[1300px] bg-white">
-            {/* Scrollable content */}
+        {/* Main content — allow hover to pass through */}
+        <section className="relative z-10 h-screen w-full flex flex-col p-10 gap-3 pointer-events-none">
+          <div className="h-fit w-full flex justify-center">
+            <h1 className="custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto">
+              My{" "}
+              <span className="text-[#6246EA] font-extrabold text-7xl">
+                Schedule
+              </span>
+            </h1>
           </div>
-        </div>
-      </div>
 
-      {/* Buttons */}
-      <div className="w-fit flex flex-col gap-3 border border-blue-400">
-        <button className="normal-button pointer-events-auto">Add</button>
-        <button className="normal-button pointer-events-auto">Settings</button>
-        <button className="normal-button pointer-events-auto">Download</button>
-      </div>
-    </div>
-  </section>
-</main>
+          <div className="flex-1 flex flex-row gap-10 min-h-0">
+            <div className="flex-1 border-4 bg-white/70 border-[#2B2C34] rounded-lg pt-8 px-14 box-border flex flex-col min-h-0 pointer-events-auto gap-2">
+              <div className="h-fit w-full">
+                <ul className="w-full flex justify-between text-center pl-[100px] pr-[20px]">
+                  {Day.map((d, i) => (
+                    <li
+                      className="w-full custom-font text-[26px] font-semibold text-[#2B2C34] border border-red-400"
+                      key={i}
+                    >
+                      {d.day}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
+              <div className="flex-1 overflow-auto scrollbar scrollbar-thumb-[#6246EA] scrollbar-track-transparent border-t-4 border-x-4 border-[#2B2C34] rounded-t-md">
+                <div className="h-[1500px] bg-white flex flex-row pt-6">
+                  <div className=" w-[100px] grid grid-rows-24 ">
+                    {Times.map((t, i) => (
+                      <div key={i} className="relative h-full text-center ">
+                        <p className="w-full absolute top-0 translate-y-[-60%] text-[12px]">
+                          {t.time}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="w-full grid grid-rows-24 grid-cols-7">
+                    {[...Array(7 * 24)].map((_, index) => (
+                      <div
+                        key={index}
+                        className="border-b border-r border-gray-300 h-full flex items-center justify-center"
+                      >
+                        {index + 1}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="w-fit flex flex-col gap-3 border border-blue-400">
+              <button
+                className="normal-button pointer-events-auto"
+                onClick={toggleForm}
+              >
+                Add
+              </button>
+              <button className="normal-button pointer-events-auto">
+                Settings
+              </button>
+              <button className="normal-button pointer-events-auto">
+                Download
+              </button>
+            </div>
+          </div>
+
+          {schedForm && (
+            <div className="absolute h-full w-full bg-[#D1D1E9]/50 border border-red-400 top-0 left-0">
+              <div className="h-full w-full flex justify-center items-center">
+                <form className="flex flex-col gap-5 bg-white w-[350px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto">
+                  <h1 className="custom-font text-3xl font-bold text-[#2B2C34] text-center">
+                    Add{" "}
+                    <span className="text-[#6246EA] text-5xl">Schedule</span>
+                  </h1>
+
+                  <div className="flex flex-col">
+                    <label className="form-label">Title</label>
+                    <input type="text" className="form-input" required />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label className="form-label">Day</label>
+                    <input type="number" className="form-input" required />
+                  </div>
+
+                  <div className="w-full flex justify-center items-center gap-2">
+                    <div className=" flex flex-col">
+                      <label className="form-label">Start</label>
+                      <input
+                        type="number"
+                        className="w-full form-input"
+                        required
+                      />
+                    </div>
+
+                    <div className="flex flex-col">
+                      <label className="form-label">End</label>
+                      <input
+                        type="number"
+                        className="w-full form-input"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center gap-2 items-center">
+                    <button type="submit" className="text-lg normal-button">
+                      Add
+                    </button>
+
+                    <button
+                      className="bg-transparent font-bold text-[#2B2C34] normal-button"
+                      onClick={toggleForm}
+                    >
+                      Close
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </section>
+      </main>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

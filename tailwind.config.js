@@ -6,8 +6,8 @@ export default {
   ],
   theme: {
     extend: {
-      gridTemplateColumns: {
-        18: 'repeat(18, minmax(0, 1fr))',
+      gridTemplateRows: {
+        24: 'repeat(24, minmax(0, 1fr))',
       },
     },
   },
