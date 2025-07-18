@@ -97,9 +97,9 @@ function App() {
           {schedForm && (
             <div className="absolute h-full w-full bg-[#D1D1E9]/50 border border-red-400 top-0 left-0">
               <div className="h-full w-full flex justify-center items-center">
-                <form className="flex flex-col gap-5 bg-white w-[350px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto">
+                <form className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto">
                   <h1 className="custom-font text-3xl font-bold text-[#2B2C34] text-center">
-                    Add{" "}
+                    Add
                     <span className="text-[#6246EA] text-5xl">Schedule</span>
                   </h1>
 
@@ -107,6 +107,11 @@ function App() {
                     <label className="form-label">Title</label>
                     <input type="text" className="form-input" required />
                   </div>
+                  
+                  <div className="flex flex-col">
+                    <label className="form-label">Description</label>
+                    <textarea className="form-input h-[70px] resize-none"></textarea>
+                  </div>                  
 
                   <div className="flex flex-col">
                     <label className="form-label">Day</label>
