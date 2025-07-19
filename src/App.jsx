@@ -52,7 +52,7 @@ function App() {
               </div>
 
               <div className="flex-1 overflow-auto scrollbar scrollbar-thumb-[#6246EA] scrollbar-track-transparent border-t-4 border-x-4 border-[#2B2C34] rounded-t-md">
-                <div className="h-[1500px] bg-white flex flex-row pt-6">
+                <div className="h-[1500px] bg-white flex flex-row py-6">
                   <div className=" w-[100px] grid grid-rows-24 ">
                     {Times.map((t, i) => (
                       <div key={i} className="relative h-full text-center ">
@@ -63,7 +63,7 @@ function App() {
                     ))}
                   </div>
 
-                  <div className="w-full grid grid-rows-24 grid-cols-7">
+                  <div className="w-full grid grid-rows-24 grid-cols-7 border-t border-l border-gray-300">
                     {[...Array(7 * 24)].map((_, index) => (
                       <div
                         key={index}
@@ -119,22 +119,22 @@ function App() {
                   </div>
 
                   <div className="w-full flex justify-center items-center gap-2">
-                    <div className=" flex flex-col">
+                    <div className="w-full flex flex-col">
                       <label className="form-label">Start</label>
-                      <input
-                        type="number"
-                        className="w-full form-input"
-                        required
-                      />
+                      <select id="" className="form-input px-2">
+                        {Times.map((t,i) =>(
+                          <option key={i}>{t.time}</option>
+                        ))}
+                      </select>
                     </div>
 
-                    <div className="flex flex-col">
+                    <div className="w-full flex flex-col">
                       <label className="form-label">End</label>
-                      <input
-                        type="number"
-                        className="w-full form-input"
-                        required
-                      />
+                      <select id="" className="w-full form-input px-2">
+                        {Times.map((t,i) =>(
+                          <option key={i} value={t.value}>{t.time}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
