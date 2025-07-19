@@ -6,10 +6,33 @@ import { useState } from "react";
 
 function App() {
   const [schedForm, setschedForm] = useState(false);
+  const [sched, setSched] = useState([])
+  const [title, setTitle] = useState("")
+  const [description, setDescription] = useState("")
+  const [day, setDay] = useState(1)
+  const [start, setStart] = useState(0)
+  const [end, setEnd] = useState(1)
+
+
 
   const toggleForm = () => {
     setschedForm((prev) => !prev);
-  };
+  }
+
+  const scheduleMark = (e) => {
+    e.preventDefault();
+
+    setSched([
+      ...sched, {
+        title,
+        description,
+        column: day,
+        rowStart: start,
+        rowEnd: end
+      }
+    ])
+    console.log(title, description ,day, start, end);
+  }
 
   return (
     <>
@@ -26,7 +49,7 @@ function App() {
         </div>
 
         {/* Main content — allow hover to pass through */}
-        <section className="relative z-10 h-screen w-full flex flex-col p-10 gap-3 pointer-events-none">
+        <section className="relative z-10 h-screen w-full flex flex-col px-10 py-5 gap-3 pointer-events-none">
           <div className="h-fit w-full flex justify-center">
             <h1 className="custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto">
               My{" "}
@@ -63,13 +86,19 @@ function App() {
                     ))}
                   </div>
 
-                  <div className="w-full grid grid-rows-24 grid-cols-7 border-t border-l border-gray-300">
-                    {[...Array(7 * 24)].map((_, index) => (
+                  <div className="h-full w-full grid grid-rows-24 grid-cols-7 grid-flow-col border-t border-l border-gray-300">
+                    {sched.map((s,i)=>(
                       <div
-                        key={index}
-                        className="border-b border-r border-gray-300 h-full flex items-center justify-center"
+                        key={i}
+                        className="border-2 border-[#6246EA] bg-[#D1D1E9]/20 h-full flex flex-col items-center justify-center overflow-hidden rounded-lg p-5"
+                        style={{
+                          gridColumnStart: s.column,
+                          gridRowStart: s.rowStart + 1,
+                          gridRowEnd: s.rowEnd + 1,
+                        }}
                       >
-                        {index + 1}
+                        <h3 className="text-xl font-semibold text-[#2B2C34] custom-font">{s.title}</h3>
+                        <p className="text-sm text-[#2B2C34]">{s.description}</p>
                       </div>
                     ))}
                   </div>
@@ -97,7 +126,9 @@ function App() {
           {schedForm && (
             <div className="absolute h-full w-full bg-[#D1D1E9]/50 border border-red-400 top-0 left-0">
               <div className="h-full w-full flex justify-center items-center">
-                <form className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto">
+                <form className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto"
+                  onSubmit={scheduleMark}
+                >
                   <h1 className="custom-font text-3xl font-bold text-[#2B2C34] text-center">
                     Add
                     <span className="text-[#6246EA] text-5xl">Schedule</span>
@@ -105,32 +136,47 @@ function App() {
 
                   <div className="flex flex-col">
                     <label className="form-label">Title</label>
-                    <input type="text" className="form-input" required />
+                    <input type="text" className="form-input" 
+                      value={title} 
+                      onChange={(e) => setTitle(e.target.value)}
+                      required />
                   </div>
                   
                   <div className="flex flex-col">
                     <label className="form-label">Description</label>
-                    <textarea className="form-input h-[70px] resize-none"></textarea>
+                    <textarea className="form-input h-[70px] resize-none" 
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}></textarea>
                   </div>                  
 
                   <div className="flex flex-col">
                     <label className="form-label">Day</label>
-                    <input type="number" className="form-input" required />
+                    <select className="form-input px-2" 
+                      value={day} 
+                      onChange={(e) =>setDay(parseInt(e.target.value))}>
+                      {Day.map((d,i) =>(
+                        <option key={i} value={d.value}>{d.day}</option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="w-full flex justify-center items-center gap-2">
                     <div className="w-full flex flex-col">
                       <label className="form-label">Start</label>
-                      <select id="" className="form-input px-2">
+                      <select id="" className="form-input px-2" 
+                        value={start}
+                        onChange={(e) =>setStart(parseInt(e.target.value))}>
                         {Times.map((t,i) =>(
-                          <option key={i}>{t.time}</option>
+                          <option key={i} value={t.value}>{t.time}</option>
                         ))}
                       </select>
                     </div>
 
                     <div className="w-full flex flex-col">
                       <label className="form-label">End</label>
-                      <select id="" className="w-full form-input px-2">
+                      <select id="" className="w-full form-input px-2" 
+                        value={end}
+                        onChange={(e) =>setEnd(parseInt(e.target.value))}>
                         {Times.map((t,i) =>(
                           <option key={i} value={t.value}>{t.time}</option>
                         ))}
