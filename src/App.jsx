@@ -6,18 +6,16 @@ import { useState } from "react";
 
 function App() {
   const [schedForm, setschedForm] = useState(false);
-  const [sched, setSched] = useState([])
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [day, setDay] = useState(1)
-  const [start, setStart] = useState(0)
-  const [end, setEnd] = useState(1)
-
-
+  const [sched, setSched] = useState([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [day, setDay] = useState(1);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(1);
 
   const toggleForm = () => {
     setschedForm((prev) => !prev);
-  }
+  };
 
   const scheduleMark = (e) => {
     e.preventDefault();
@@ -26,18 +24,27 @@ function App() {
     const endTimeObj = Times.find((t) => t.value === end);
 
     setSched([
-      ...sched, {
+      ...sched,
+      {
         title,
         description,
         starttime: startTimeObj.time,
         endtime: endTimeObj.time,
         column: day,
         rowStart: start,
-        rowEnd: end
-      }
-    ])
-    console.log(title, description, startTimeObj.time, endTimeObj.time, day, start, end);
-  }
+        rowEnd: end,
+      },
+    ]);
+    console.log(
+      title,
+      description,
+      startTimeObj.time,
+      endTimeObj.time,
+      day,
+      start,
+      end
+    );
+  };
 
   return (
     <>
@@ -66,60 +73,62 @@ function App() {
 
           <div className="flex-1 flex flex-row gap-10 min-h-0">
             <div className="flex-1 border-4 bg-white/70 border-[#2B2C34] rounded-lg pt-8 px-14 box-border flex flex-col min-h-0 pointer-events-auto gap-2">
-              <div className="h-fit w-full">
-                <ul className="w-full flex justify-between text-center pl-[100px] pr-[20px]">
+              <div className="pl-[100px] overflow-x-auto">
+                <div className="min-w-fit grid grid-flow-col auto-cols-max border-b border-gray-300">
                   {Day.map((d, i) => (
-                    <li
-                      className="w-full custom-font text-[26px] font-semibold text-[#2B2C34]"
+                    <div
                       key={i}
+                      className="px-6 py-2 text-center custom-font text-[26px] font-semibold text-[#2B2C34] border-r border-gray-200"
                     >
                       {d.day}
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="flex-1 overflow-auto scrollbar scrollbar-thumb-[#6246EA] scrollbar-track-transparent border-t-4 border-x-4 border-[#2B2C34] rounded-t-md">
-<div className="h-[1500px] bg-white flex flex-row py-6">
-  {/* Time Column - stays fixed */}
-  <div className="w-[100px] grid grid-rows-24 border border-blue-400 shrink-0">
-    {Times.map((t, i) => (
-      <div key={i} className="relative h-full text-center border border-gray-300">
-        <p className="w-full absolute left-1/2 -translate-x-1/2 top-0 text-sm">
-          {t.time}
-        </p>
-      </div>
-    ))}
-  </div>
+                <div className="h-[1500px] bg-white flex flex-row py-6">
+                  {/* Time Column - stays fixed */}
+                  <div className="w-[100px] grid grid-rows-24 border border-blue-400 shrink-0">
+                    {Times.map((t, i) => (
+                      <div
+                        key={i}
+                        className="relative h-full text-center border border-gray-300"
+                      >
+                        <p className="w-full absolute left-1/2 -translate-x-1/2 top-0 text-sm">
+                          {t.time}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
 
-  {/* Scrollable 7-Day Grid */}
-  <div className="overflow-x-auto">
-    <div className="min-w-fit h-full grid grid-rows-24 grid-flow-col auto-cols-max border-t border-l border-gray-300">
-
-      {sched.map((s, i) => (
-        <div
-  key={i}
-  className="border-2 border-[#6246EA] bg-[#D1D1E9]/20 h-full flex flex-col items-center justify-center overflow-hidden rounded-lg px-6 py-4 text-center"
-  style={{
-    gridColumnStart: s.column,
-    gridRowStart: s.rowStart + 1,
-    gridRowEnd: s.rowEnd + 1,
-  }}
->
-  <h3 className="text-base font-semibold text-[#2B2C34] custom-font">
-    {s.title}
-  </h3>
-  <p className="text-sm text-[#2B2C34]">{s.description}</p>
-  <p className="text-sm text-[#2B2C34]">
-    {s.starttime} - {s.endtime}
-  </p>
-</div>
-
-      ))}
-    </div>
-  </div>
-</div>
-
+                  {/* Scrollable 7-Day Grid */}
+                  <div className="overflow-x-auto">
+                    <div className="min-w-fit h-full grid grid-rows-24 grid-flow-col auto-cols-max border-t border-l border-gray-300">
+                      {sched.map((s, i) => (
+                        <div
+                          key={i}
+                          className="border-2 border-[#6246EA] bg-[#D1D1E9]/20 h-full flex flex-col items-center justify-center overflow-hidden rounded-lg px-6 py-4 text-center"
+                          style={{
+                            gridColumnStart: s.column,
+                            gridRowStart: s.rowStart + 1,
+                            gridRowEnd: s.rowEnd + 1,
+                          }}
+                        >
+                          <h3 className="text-base font-semibold text-[#2B2C34] custom-font">
+                            {s.title}
+                          </h3>
+                          <p className="text-sm text-[#2B2C34]">
+                            {s.description}
+                          </p>
+                          <p className="text-sm text-[#2B2C34]">
+                            {s.starttime} - {s.endtime}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -143,7 +152,8 @@ function App() {
           {schedForm && (
             <div className="absolute h-full w-full bg-[#D1D1E9]/50 border border-red-400 top-0 left-0">
               <div className="h-full w-full flex justify-center items-center">
-                <form className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto"
+                <form
+                  className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto"
                   onSubmit={scheduleMark}
                 >
                   <h1 className="custom-font text-3xl font-bold text-[#2B2C34] text-center">
@@ -153,26 +163,35 @@ function App() {
 
                   <div className="flex flex-col">
                     <label className="form-label">Title</label>
-                    <input type="text" className="form-input" 
-                      value={title} 
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      required />
+                      required
+                    />
                   </div>
-                  
+
                   <div className="flex flex-col">
                     <label className="form-label">Description</label>
-                    <textarea className="form-input h-[70px] resize-none" 
+                    <textarea
+                      className="form-input h-[70px] resize-none"
                       value={description}
-                      onChange={(e) => setDescription(e.target.value)}></textarea>
-                  </div>                  
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea>
+                  </div>
 
                   <div className="flex flex-col">
                     <label className="form-label">Day</label>
-                    <select className="form-input px-2" 
-                      value={day} 
-                      onChange={(e) =>setDay(parseInt(e.target.value))}>
-                      {Day.map((d,i) =>(
-                        <option key={i} value={d.value}>{d.day}</option>
+                    <select
+                      className="form-input px-2"
+                      value={day}
+                      onChange={(e) => setDay(parseInt(e.target.value))}
+                    >
+                      {Day.map((d, i) => (
+                        <option key={i} value={d.value}>
+                          {d.day}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -180,22 +199,32 @@ function App() {
                   <div className="w-full flex justify-center items-center gap-2">
                     <div className="w-full flex flex-col">
                       <label className="form-label">Start</label>
-                      <select id="" className="form-input px-2" 
+                      <select
+                        id=""
+                        className="form-input px-2"
                         value={start}
-                        onChange={(e) =>setStart(parseInt(e.target.value))}>
-                        {Times.map((t,i) =>(
-                          <option key={i} value={t.value}>{t.time}</option>
+                        onChange={(e) => setStart(parseInt(e.target.value))}
+                      >
+                        {Times.map((t, i) => (
+                          <option key={i} value={t.value}>
+                            {t.time}
+                          </option>
                         ))}
                       </select>
                     </div>
 
                     <div className="w-full flex flex-col">
                       <label className="form-label">End</label>
-                      <select id="" className="w-full form-input px-2" 
+                      <select
+                        id=""
+                        className="w-full form-input px-2"
                         value={end}
-                        onChange={(e) =>setEnd(parseInt(e.target.value))}>
-                        {Times.map((t,i) =>(
-                          <option key={i} value={t.value}>{t.time}</option>
+                        onChange={(e) => setEnd(parseInt(e.target.value))}
+                      >
+                        {Times.map((t, i) => (
+                          <option key={i} value={t.value}>
+                            {t.time}
+                          </option>
                         ))}
                       </select>
                     </div>
