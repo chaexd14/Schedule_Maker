@@ -22,16 +22,21 @@ function App() {
   const scheduleMark = (e) => {
     e.preventDefault();
 
+    const startTimeObj = Times.find((t) => t.value === start);
+    const endTimeObj = Times.find((t) => t.value === end);
+
     setSched([
       ...sched, {
         title,
         description,
+        starttime: startTimeObj.time,
+        endtime: endTimeObj.time,
         column: day,
         rowStart: start,
         rowEnd: end
       }
     ])
-    console.log(title, description ,day, start, end);
+    console.log(title, description, startTimeObj.time, endTimeObj.time, day, start, end);
   }
 
   return (
@@ -65,7 +70,7 @@ function App() {
                 <ul className="w-full flex justify-between text-center pl-[100px] pr-[20px]">
                   {Day.map((d, i) => (
                     <li
-                      className="w-full custom-font text-[26px] font-semibold text-[#2B2C34] border border-red-400"
+                      className="w-full custom-font text-[26px] font-semibold text-[#2B2C34]"
                       key={i}
                     >
                       {d.day}
@@ -75,34 +80,46 @@ function App() {
               </div>
 
               <div className="flex-1 overflow-auto scrollbar scrollbar-thumb-[#6246EA] scrollbar-track-transparent border-t-4 border-x-4 border-[#2B2C34] rounded-t-md">
-                <div className="h-[1500px] bg-white flex flex-row py-6">
-                  <div className=" w-[100px] grid grid-rows-24 ">
-                    {Times.map((t, i) => (
-                      <div key={i} className="relative h-full text-center ">
-                        <p className="w-full absolute top-0 translate-y-[-60%] text-[12px]">
-                          {t.time}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+<div className="h-[1500px] bg-white flex flex-row py-6">
+  {/* Time Column - stays fixed */}
+  <div className="w-[100px] grid grid-rows-24 border border-blue-400 shrink-0">
+    {Times.map((t, i) => (
+      <div key={i} className="relative h-full text-center border border-gray-300">
+        <p className="w-full absolute left-1/2 -translate-x-1/2 top-0 text-sm">
+          {t.time}
+        </p>
+      </div>
+    ))}
+  </div>
 
-                  <div className="h-full w-full grid grid-rows-24 grid-cols-7 grid-flow-col border-t border-l border-gray-300">
-                    {sched.map((s,i)=>(
-                      <div
-                        key={i}
-                        className="border-2 border-[#6246EA] bg-[#D1D1E9]/20 h-full flex flex-col items-center justify-center overflow-hidden rounded-lg p-5"
-                        style={{
-                          gridColumnStart: s.column,
-                          gridRowStart: s.rowStart + 1,
-                          gridRowEnd: s.rowEnd + 1,
-                        }}
-                      >
-                        <h3 className="text-xl font-semibold text-[#2B2C34] custom-font">{s.title}</h3>
-                        <p className="text-sm text-[#2B2C34]">{s.description}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+  {/* Scrollable 7-Day Grid */}
+  <div className="overflow-x-auto">
+    <div className="min-w-fit h-full grid grid-rows-24 grid-flow-col auto-cols-max border-t border-l border-gray-300">
+
+      {sched.map((s, i) => (
+        <div
+  key={i}
+  className="border-2 border-[#6246EA] bg-[#D1D1E9]/20 h-full flex flex-col items-center justify-center overflow-hidden rounded-lg px-6 py-4 text-center"
+  style={{
+    gridColumnStart: s.column,
+    gridRowStart: s.rowStart + 1,
+    gridRowEnd: s.rowEnd + 1,
+  }}
+>
+  <h3 className="text-base font-semibold text-[#2B2C34] custom-font">
+    {s.title}
+  </h3>
+  <p className="text-sm text-[#2B2C34]">{s.description}</p>
+  <p className="text-sm text-[#2B2C34]">
+    {s.starttime} - {s.endtime}
+  </p>
+</div>
+
+      ))}
+    </div>
+  </div>
+</div>
+
               </div>
             </div>
 
