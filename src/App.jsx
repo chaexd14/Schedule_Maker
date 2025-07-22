@@ -73,13 +73,13 @@ function App() {
           {/* Main container */}
           <div className="flex flex-row w-full h-[calc(100vh-6rem)] overflow-hidden border border-orange-400">
             {/* Schedule scroll area (both horizontal & vertical) */}
-            <div className="flex-1 overflow-auto border border-blue-400 pointer-events-auto">
+            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto">
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max">
                 {/* Days Header */}
-                <div className="pl-[80px] grid grid-cols-7 sticky top-0 z-10 border-violet-400">
+                <div className="pl-[80px] mb-5 grid grid-cols-7 sticky top-0 z-10">
                   {Day.map((d, i) => (
-                    <div key={i} className="text-center font-semibold border border-red-400">
+                    <div key={i} className="text-center border-b border-l border-red-400">
                       {d.day}
                     </div>
                   ))}
@@ -88,23 +88,23 @@ function App() {
                 {/* Grid area */}
                 <div className="flex">
                   {/* Time Column (sticky left) */}
-                  <div className="grid grid-rows-24 sticky left-0 z-10">
+                  <div className="bg-white border-t grid border-red-400 grid-rows-24 sticky left-0 z-10">
                     {Times.map((t, i) => (
                       <div
                         key={i}
-                        className="w-[80px] text-xs flex items-center justify-center border border-red-400"
+                        className="relative w-[80px] text-xs flex items-center justify-center border-b border-l border-red-400"
                       >
-                        {t.time}
+                        <h1 className="absolute -top-[10px]">{t.time}</h1>
                       </div>
                     ))}
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="grid grid-cols-7 grid-rows-24">
+                  <div className="bg-slate-200 border-t border-l border-red-400 grid grid-cols-7 grid-rows-24">
                     {Array.from({ length: 7 * 24 }).map((_, i) => (
                       <div
                         key={i}
-                        className="border border-red-400 min-w-[300px] min-h-[40px]"
+                        className="border-r border-b border-red-400 min-w-[300px] min-h-[40px]"
                       />
                     ))}
                   </div>
