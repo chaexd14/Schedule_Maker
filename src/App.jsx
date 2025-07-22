@@ -77,7 +77,7 @@ function App() {
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max">
                 {/* Days Header */}
-                <div className="pl-[80px] mb-5 grid grid-cols-7 sticky top-0 z-10">
+                <div className="bg-white pl-[80px] mb-5 grid grid-cols-7 sticky top-0 z-20">
                   {Day.map((d, i) => (
                     <div key={i} className="text-center border-b border-l border-red-400">
                       {d.day}
