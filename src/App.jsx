@@ -44,6 +44,8 @@ function App() {
       },
     ]);
     console.log(schedForm);
+    setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
+    toggleForm();
   };
 
   return (
