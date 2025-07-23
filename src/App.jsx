@@ -3,47 +3,47 @@ import Squares from "./components/ui/Squares/Squares";
 import { Times } from "./data/time";
 import { Day } from "./data/day";
 import { useState } from "react";
+import AddSchedule from "./forms/addSchedule";
 
 function App() {
-  const [schedForm, setschedForm] = useState(false);
+  const [showForm, setshowForm] = useState(false);
   const [sched, setSched] = useState([]);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [day, setDay] = useState(1);
-  const [start, setStart] = useState(0);
-  const [end, setEnd] = useState(1);
+
+  const [schedForm, setschedForm]= useState({
+    title: "",
+    description: "",
+    day: 0,
+    start: 0,
+    end: 1
+  })
+
+  const handleFormChange = (key, value) => {
+    setschedForm((prev) => ({ ...prev, [key]: value }));
+  };
 
   const toggleForm = () => {
-    setschedForm((prev) => !prev);
+    setshowForm((prev) => !prev);
   };
 
   const scheduleMark = (e) => {
     e.preventDefault();
 
-    const startTimeObj = Times.find((t) => t.value === start);
-    const endTimeObj = Times.find((t) => t.value === end);
+    const startTimeObj = Times.find((t) => t.value ===schedForm.start);
+    const endTimeObj = Times.find((t) => t.value === schedForm.end);
 
     setSched([
       ...sched,
       {
-        title,
-        description,
-        starttime: startTimeObj.time,
-        endtime: endTimeObj.time,
-        column: day,
-        rowStart: start,
-        rowEnd: end,
+        title: schedForm.title,
+        description: schedForm.description,
+        starttime: startTimeObj,
+        endtime: endTimeObj,
+        column: schedForm.day,
+        rowStart: schedForm.start,
+        rowEnd: schedForm.end,
       },
     ]);
-    console.log(
-      title,
-      description,
-      startTimeObj.time,
-      endTimeObj.time,
-      day,
-      start,
-      end
-    );
+    console.log(schedForm);
   };
 
   return (
@@ -62,7 +62,17 @@ function App() {
 
         {/* Main content — allow hover to pass through */}
         <section className="relative z-10 h-screen w-full flex flex-col items-center pointer-events-none">
-          
+
+          {/* Forms */}
+          {showForm&&(
+          <AddSchedule
+            schedForm={schedForm}
+            toggleForm={toggleForm}
+            handleFormChange={handleFormChange}
+            scheduleMark={scheduleMark}
+          />
+          )}
+
           <h1 className="w-fit custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto">
             My
             <span className="text-[#6246EA] font-extrabold text-7xl">
@@ -100,14 +110,42 @@ function App() {
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="bg-slate-200 border-t border-l border-red-400 grid grid-cols-7 grid-rows-24">
-                    {Array.from({ length: 7 * 24 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="border-r border-b border-red-400 min-w-[300px] min-h-[40px]"
-                      />
-                    ))}
-                  </div>
+                  <div className="bg-slate-200 border-t border-l border-red-400 grid grid-cols-7 grid-rows-24 relative">
+                  {/* Always show empty grid cells */}
+                  {Array.from({ length: 7 * 24 }).map((_, i) => (
+                    <div
+                      key={`cell-${i}`}
+                      className="border-r border-b border-red-400 min-w-[200px] min-h-[80px]"
+                    />
+                  ))}
+
+                  {/* Then overlay schedules using absolute positioning inside the relative parent */}
+                  {sched.map((s, i) => (
+                    <div
+                      key={`sched-${i}`}
+                      className="absolute bg-slate-200 p-2"
+                      style={{
+                        top: `${s.rowStart * 80}px`,
+                        left: `${s.column * 200}px`,
+                        height: `${(s.rowEnd - s.rowStart) * 80}px`,
+                        width: `200px`,
+                      }}
+                    >
+                      <div className="h-full border border-[#6246EA] bg-[#D1D1E9] rounded">
+                        <h3 className="text-base font-semibold text-[#2B2C34] custom-font">
+                          {s.title}
+                        </h3>
+                        <p className="text-sm text-[#2B2C34]">{s.description}</p>
+                        <p className="text-sm text-[#2B2C34]">
+                          {s.starttime.time} - {s.endtime.time}
+                        </p>
+                        </div>
+                    </div>
+                  ))}
+
+
+                </div>
+
                 </div>
               </div>
             </div>
