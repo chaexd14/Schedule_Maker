@@ -63,7 +63,7 @@ function App() {
         </div>
 
         {/* Main content — allow hover to pass through */}
-        <section className="relative z-10 h-screen w-full flex flex-col items-center pointer-events-none">
+        <section className="relative z-10 h-screen w-full flex flex-col items-center pointer-events-none px-10">
 
           {/* Forms */}
           {showForm&&(
@@ -75,7 +75,7 @@ function App() {
           />
           )}
 
-          <h1 className="w-fit custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto">
+          <h1 className="w-fit custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto my-2">
             My
             <span className="text-[#6246EA] font-extrabold text-7xl">
               Schedule
@@ -83,9 +83,9 @@ function App() {
           </h1>
 
           {/* Main container */}
-          <div className="flex flex-row w-full h-[calc(100vh-6rem)] overflow-hidden border border-orange-400">
+          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-orange-400">
             {/* Schedule scroll area (both horizontal & vertical) */}
-            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA] scrollbar-track-transparent">
+            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA] scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max">
                 {/* Days Header */}
