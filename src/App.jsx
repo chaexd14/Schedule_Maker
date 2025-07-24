@@ -85,14 +85,14 @@ function App() {
           {/* Main container */}
           <div className="flex flex-row w-full h-[calc(100vh-6rem)] overflow-hidden border border-orange-400">
             {/* Schedule scroll area (both horizontal & vertical) */}
-            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto">
+            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA] scrollbar-track-transparent">
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max">
                 {/* Days Header */}
-                <div className="bg-white pl-[80px] mb-5 grid grid-cols-7 sticky top-0 z-20">
+                <div className="bg-white pl-[100px] mb-5 grid grid-cols-7 sticky top-0 z-20">
                   {Day.map((d, i) => (
-                    <div key={i} className="text-center border-b border-l border-red-400">
-                      {d.day}
+                    <div key={i} className="border-b border-l border-red-400">
+                      <h1 className="text-center custom-font text-2xl font-bold text-[#2B2C34]">{d.day}</h1>
                     </div>
                   ))}
                 </div>
@@ -104,20 +104,20 @@ function App() {
                     {Times.map((t, i) => (
                       <div
                         key={i}
-                        className="relative w-[80px] text-xs flex items-center justify-center border-b border-l border-red-400"
+                        className="relative w-[100px] text-xs flex items-center justify-center border-b border-l border-red-400"
                       >
-                        <h1 className="absolute -top-[10px]">{t.time}</h1>
+                        <h1 className="absolute -top-[10px] text-sm text-sla">{t.time}</h1>
                       </div>
                     ))}
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="bg-slate-200 border-t border-l border-red-400 grid grid-cols-7 grid-rows-24 relative">
+                  <div className="bg-[#D1D1E9]/25 border-t border-l border-red-400 grid grid-cols-7 grid-rows-24 relative">
                   {/* Always show empty grid cells */}
                   {Array.from({ length: 7 * 24 }).map((_, i) => (
                     <div
                       key={`cell-${i}`}
-                      className="border-r border-b border-red-400 min-w-[200px] min-h-[80px]"
+                      className="border-r border-b border-red-400 min-w-[200px] min-h-[100px]"
                     />
                   ))}
 
@@ -125,20 +125,20 @@ function App() {
                   {sched.map((s, i) => (
                     <div
                       key={`sched-${i}`}
-                      className="absolute bg-slate-200 p-2"
+                      className="absolute p-2"
                       style={{
-                        top: `${s.rowStart * 80}px`,
+                        top: `${s.rowStart * 100}px`,
                         left: `${s.column * 200}px`,
-                        height: `${(s.rowEnd - s.rowStart) * 80}px`,
+                        height: `${(s.rowEnd - s.rowStart) * 100}px`,
                         width: `200px`,
                       }}
                     >
-                      <div className="h-full border border-[#6246EA] bg-[#D1D1E9] rounded">
-                        <h3 className="text-base font-semibold text-[#2B2C34] custom-font">
+                      <div className="flex flex-col gap-1 h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-2 px-4">
+                        <h3 className="text-2xl font-bold text-[#2B2C34] custom-font text-center">
                           {s.title}
                         </h3>
-                        <p className="text-sm text-[#2B2C34]">{s.description}</p>
-                        <p className="text-sm text-[#2B2C34]">
+                        <p className="text-sm text-[#2B2C34] break-words">{s.description}</p>
+                        <p className="text-sm text-[#2B2C34] text-center font-semibold">
                           {s.starttime.time} - {s.endtime.time}
                         </p>
                         </div>
