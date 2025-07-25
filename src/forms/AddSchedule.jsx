@@ -105,7 +105,6 @@ function AddSchedule({
               <button
                 className="bg-transparent font-bold text-[#2B2C34] normal-button"
                 onClick={toggleSchedForm}
-                oni
               >
                 Close
               </button>
