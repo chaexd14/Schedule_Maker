@@ -1,12 +1,15 @@
 import "./App.css";
 import Squares from "./components/ui/Squares/Squares";
 import { Times } from "./data/time";
+import { hours12 } from "./data/12hour";
 import { Day } from "./data/day";
 import { useState } from "react";
 import AddSchedule from "./forms/addSchedule";
+import ScheduleSetting from "./forms/ScheduleSetting";
 
 function App() {
   const [showForm, setshowForm] = useState(false);
+  const [showSetting, setshowSetting] = useState(false)
   const [sched, setSched] = useState([]);
 
   const [schedForm, setschedForm]= useState({
@@ -21,9 +24,13 @@ function App() {
     setschedForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const toggleForm = () => {
-    setshowForm((prev) => !prev);
+  const toggleSchedForm = () => {
+    setshowForm((prev) => !prev)
   };
+
+  const toggleSetting = () =>{
+    setshowSetting((prev) => !prev)
+  }
 
   const scheduleMark = (e) => {
     e.preventDefault();
@@ -69,10 +76,15 @@ function App() {
           {showForm&&(
           <AddSchedule
             schedForm={schedForm}
-            toggleForm={toggleForm}
+            toggleSchedForm={toggleSchedForm}
             handleFormChange={handleFormChange}
             scheduleMark={scheduleMark}
           />
+          )}
+          {showSetting&&(
+            <ScheduleSetting 
+              toggleSetting={toggleSetting}
+            />
           )}
 
           <h1 className="w-fit custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto my-2">
@@ -85,7 +97,7 @@ function App() {
           {/* Main container */}
           <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-orange-400">
             {/* Schedule scroll area (both horizontal & vertical) */}
-            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA] scrollbar-track-transparent mr-4">
+            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max">
                 {/* Days Header */}
@@ -100,24 +112,24 @@ function App() {
                 {/* Grid area */}
                 <div className="flex">
                   {/* Time Column (sticky left) */}
-                  <div className="bg-white border-t grid border-red-400 grid-rows-24 sticky left-0 z-10">
-                    {Times.map((t, i) => (
+                  <div className="bg-white border-t grid border-gray-300 grid-rows-24 sticky left-0 z-10">
+                    {hours12.map((t, i) => (
                       <div
                         key={i}
-                        className="relative w-[100px] text-xs flex items-center justify-center border-b border-l border-red-400"
+                        className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
                       >
-                        <h1 className="absolute -top-[10px] text-sm text-sla">{t.time}</h1>
+                        <h1 className="absolute -top-[9px] text-[12px] bg-white">{t.time}</h1>
                       </div>
                     ))}
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="bg-[#D1D1E9]/25 border-t border-l border-red-400 grid grid-cols-7 grid-rows-24 relative">
+                  <div className="bg-[#D1D1E9]10 border-t border-l border-gray-300 grid grid-cols-7 grid-rows-24 relative">
                   {/* Always show empty grid cells */}
                   {Array.from({ length: 7 * 24 }).map((_, i) => (
                     <div
                       key={`cell-${i}`}
-                      className="border-r border-b border-red-400 min-w-[200px] min-h-[100px]"
+                      className="border-r border-b border-gray-300 min-w-[200px] min-h-[100px]"
                     />
                   ))}
 
@@ -137,7 +149,9 @@ function App() {
                         <h3 className="text-2xl font-bold text-[#2B2C34] custom-font text-center">
                           {s.title}
                         </h3>
-                        <p className="text-sm text-[#2B2C34] break-words">{s.description}</p>
+                        { s.description && s.description.trim() !== "" && (
+                          <p className="text-sm text-[#2B2C34] break-words mb-[6px] text-justify">{s.description}</p>
+                        )}
                         <p className="text-sm text-[#2B2C34] text-center font-semibold">
                           {s.starttime.time} - {s.endtime.time}
                         </p>
@@ -154,10 +168,10 @@ function App() {
 
             {/* Buttons */}
             <div className="w-fit h-fit border border-red-400 flex flex-col gap-5 p-2">
-              <button className="normal-button pointer-events-auto" onClick={toggleForm}>
+              <button className="normal-button pointer-events-auto" onClick={toggleSchedForm}>
                 Add
               </button>
-              <button className="normal-button pointer-events-auto">Settings</button>
+              <button className="normal-button pointer-events-auto" onClick={toggleSetting}>Settings</button>
               <button className="normal-button pointer-events-auto">Download</button>
             </div>
           </div>

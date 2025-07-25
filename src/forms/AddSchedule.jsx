@@ -4,7 +4,7 @@ import { Day } from "../data/day";
 function AddSchedule({
   schedForm,
   handleFormChange,
-  toggleForm,
+  toggleSchedForm,
   scheduleMark,
 }) {
   return (
@@ -104,7 +104,8 @@ function AddSchedule({
 
               <button
                 className="bg-transparent font-bold text-[#2B2C34] normal-button"
-                onClick={toggleForm}
+                onClick={toggleSchedForm}
+                oni
               >
                 Close
               </button>
