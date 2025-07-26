@@ -1,6 +1,6 @@
-function ScheduleSetting(
+function ScheduleSetting({
   toggleSetting
-) {
+}) {
   return (
     <>
       <div className="absolute h-full w-full bg-[#D1D1E9]/50 z-50 border border-red-400 pointer-events-auto">
@@ -27,6 +27,7 @@ function ScheduleSetting(
 
               <button
                 className="bg-transparent font-bold text-[#2B2C34] normal-button"
+                onClick={toggleSetting}
               >
                 Close
               </button>
