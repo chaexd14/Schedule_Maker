@@ -52,7 +52,7 @@ function App() {
     ]);
     console.log(schedForm);
     setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
-    toggleForm();
+    toggleSchedForm();
   };
 
   return (
@@ -124,7 +124,7 @@ function App() {
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="bg-[#D1D1E9]10 border-t border-l border-gray-300 grid grid-cols-7 grid-rows-24 relative">
+                  <div className="w-full bg-[#D1D1E9]10 border-t border-l border-gray-300 grid grid-cols-7 grid-rows-24 relative">
                   {/* Always show empty grid cells */}
                   {Array.from({ length: 7 * 24 }).map((_, i) => (
                     <div
@@ -137,12 +137,12 @@ function App() {
                   {sched.map((s, i) => (
                     <div
                       key={`sched-${i}`}
-                      className="absolute p-2"
+                      className="absolute p-3 border border-red-400"
                       style={{
                         top: `${s.rowStart * 100}px`,
-                        left: `${s.column * 200}px`,
+                        left: `calc((100% / 7) * ${s.column})`,
                         height: `${(s.rowEnd - s.rowStart) * 100}px`,
-                        width: `200px`,
+                        width: `calc(100% / 7)`,
                       }}
                     >
                       <div className="flex flex-col gap-1 h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-2 px-4">
@@ -155,11 +155,9 @@ function App() {
                         <p className="text-sm text-[#2B2C34] text-center font-semibold">
                           {s.starttime.time} - {s.endtime.time}
                         </p>
-                        </div>
+                      </div>
                     </div>
                   ))}
-
-
                 </div>
 
                 </div>

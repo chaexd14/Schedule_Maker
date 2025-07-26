@@ -23,6 +23,6 @@
    }
 
    .form-input{
-      @apply border-2 rounded-lg py-2 pl-5 border-[#6246EA]/30 bg-[#D1D1E9]/20 focus:outline-none hover:border-[#6246EA] transition-colors duration-300 ease-in-out text-sm
+      @apply border-2 rounded-lg py-2 px-5 border-[#6246EA]/30 bg-[#D1D1E9]/20 focus:outline-none hover:border-[#6246EA] transition-colors duration-300 ease-in-out text-sm
    }
 }
