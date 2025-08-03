@@ -7,8 +7,13 @@ import { Day } from "./data/day";
 import { useState } from "react";
 import AddSchedule from "./forms/addSchedule";
 import ScheduleSetting from "./forms/ScheduleSetting";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { useRef } from "react";
+
 
 function App() {
+  const scheduleRef = useRef(null);
   const [showForm, setshowForm] = useState(false);
   const [showSetting, setshowSetting] = useState(false)
   const [sched, setSched] = useState([]);
@@ -63,6 +68,80 @@ function App() {
     toggleSchedForm();
   };
 
+  // download handler
+const downloadSchedule = async () => {
+  if (!scheduleRef.current) return;
+
+  const original = scheduleRef.current;
+
+  // Clone the schedule to avoid layout side effects
+  const clone = original.cloneNode(true);
+  clone.querySelectorAll("[class*='sticky']").forEach(el => {
+    el.style.position = "static";
+    el.style.top = "auto";
+    el.style.zIndex = "0";
+  });
+
+  const container = document.createElement("div");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.zIndex = "-9999";
+  container.style.backgroundColor = "#ffffff";
+  container.style.width = original.scrollWidth + "px";
+  container.style.height = original.scrollHeight + "px";
+  container.style.overflow = "visible";
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  await new Promise((res) => setTimeout(res, 300)); // reflow
+
+  const canvas = await html2canvas(container, {
+    useCORS: true,
+    scale: 2,
+    backgroundColor: "#ffffff",
+  });
+
+  document.body.removeChild(container);
+
+  const imgData = canvas.toDataURL("image/png");
+
+  // --- Resize to fit a single A4 landscape page ---
+  const pdf = new jsPDF("landscape", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();  // 297mm
+  const pageHeight = pdf.internal.pageSize.getHeight(); // 210mm
+
+  // Calculate aspect ratio of canvas
+  const canvasRatio = canvas.width / canvas.height;
+  const pageRatio = pageWidth / pageHeight;
+
+  let renderWidth = pageWidth;
+  let renderHeight = pageHeight;
+
+  // Maintain aspect ratio
+  if (canvasRatio > pageRatio) {
+    // Canvas is wider
+    renderHeight = renderWidth / canvasRatio;
+  } else {
+    // Canvas is taller
+    renderWidth = renderHeight * canvasRatio;
+  }
+
+  const xOffset = (pageWidth - renderWidth) / 2;
+  const yOffset = (pageHeight - renderHeight) / 2;
+
+  pdf.addImage(imgData, "PNG", xOffset, yOffset, renderWidth, renderHeight);
+  pdf.save("schedule.pdf");
+};
+
+
+
+
+
+
+
+
+
   return (
     <>
       <main className="h-screen w-full bg-[#FFFFFE] relative">
@@ -108,7 +187,10 @@ function App() {
             {/* Schedule scroll area (both horizontal & vertical) */}
             <div className="flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
-              <div className="min-w-max min-h-max">
+              <div className="min-w-max min-h-max"
+                ref={scheduleRef}
+                style={{ minHeight: `${24 * 100}px` }}
+              >
                 {/* Days Header */}
                 <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
                   {Day.map((d, i) => (
@@ -179,7 +261,9 @@ function App() {
                 Add
               </button>
               <button className="normal-button pointer-events-auto" onClick={toggleSetting}>Settings</button>
-              <button className="normal-button pointer-events-auto">Download</button>
+              <button className="normal-button pointer-events-auto"
+                onClick={downloadSchedule}
+              >Download</button>
             </div>
           </div>
 
