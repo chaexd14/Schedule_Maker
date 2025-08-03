@@ -2,15 +2,22 @@ import "./App.css";
 import Squares from "./components/ui/Squares/Squares";
 import { Times } from "./data/time";
 import { hours12 } from "./data/12hour";
+import { hours24 } from "./data/24hour";
 import { Day } from "./data/day";
 import { useState } from "react";
 import AddSchedule from "./forms/addSchedule";
 import ScheduleSetting from "./forms/ScheduleSetting";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { useRef } from "react";
+
 
 function App() {
+  const scheduleRef = useRef(null);
   const [showForm, setshowForm] = useState(false);
   const [showSetting, setshowSetting] = useState(false)
   const [sched, setSched] = useState([]);
+  const [timeformat, settimeformat] = useState(hours12)
 
   const [schedForm, setschedForm]= useState({
     title: "",
@@ -19,6 +26,12 @@ function App() {
     start: 0,
     end: 1
   })
+
+  const applySettings = (selectedFormat) =>{
+    settimeformat(selectedFormat === "12" ? hours12 : hours24);
+
+    toggleSetting();
+  }
 
   const handleFormChange = (key, value) => {
     setschedForm((prev) => ({ ...prev, [key]: value }));
@@ -55,6 +68,80 @@ function App() {
     toggleSchedForm();
   };
 
+  // download handler
+const downloadSchedule = async () => {
+  if (!scheduleRef.current) return;
+
+  const original = scheduleRef.current;
+
+  // Clone the schedule to avoid layout side effects
+  const clone = original.cloneNode(true);
+  clone.querySelectorAll("[class*='sticky']").forEach(el => {
+    el.style.position = "static";
+    el.style.top = "auto";
+    el.style.zIndex = "0";
+  });
+
+  const container = document.createElement("div");
+  container.style.position = "absolute";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.zIndex = "-9999";
+  container.style.backgroundColor = "#ffffff";
+  container.style.width = original.scrollWidth + "px";
+  container.style.height = original.scrollHeight + "px";
+  container.style.overflow = "visible";
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  await new Promise((res) => setTimeout(res, 300)); // reflow
+
+  const canvas = await html2canvas(container, {
+    useCORS: true,
+    scale: 2,
+    backgroundColor: "#ffffff",
+  });
+
+  document.body.removeChild(container);
+
+  const imgData = canvas.toDataURL("image/png");
+
+  // --- Resize to fit a single A4 landscape page ---
+  const pdf = new jsPDF("landscape", "mm", "a4");
+  const pageWidth = pdf.internal.pageSize.getWidth();  // 297mm
+  const pageHeight = pdf.internal.pageSize.getHeight(); // 210mm
+
+  // Calculate aspect ratio of canvas
+  const canvasRatio = canvas.width / canvas.height;
+  const pageRatio = pageWidth / pageHeight;
+
+  let renderWidth = pageWidth;
+  let renderHeight = pageHeight;
+
+  // Maintain aspect ratio
+  if (canvasRatio > pageRatio) {
+    // Canvas is wider
+    renderHeight = renderWidth / canvasRatio;
+  } else {
+    // Canvas is taller
+    renderWidth = renderHeight * canvasRatio;
+  }
+
+  const xOffset = (pageWidth - renderWidth) / 2;
+  const yOffset = (pageHeight - renderHeight) / 2;
+
+  pdf.addImage(imgData, "PNG", xOffset, yOffset, renderWidth, renderHeight);
+  pdf.save("schedule.pdf");
+};
+
+
+
+
+
+
+
+
+
   return (
     <>
       <main className="h-screen w-full bg-[#FFFFFE] relative">
@@ -84,6 +171,7 @@ function App() {
           {showSetting&&(
             <ScheduleSetting 
               toggleSetting={toggleSetting}
+              applySettings={applySettings}
             />
           )}
 
@@ -95,15 +183,18 @@ function App() {
           </h1>
 
           {/* Main container */}
-          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-orange-400">
+          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden">
             {/* Schedule scroll area (both horizontal & vertical) */}
-            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
+            <div className="flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
-              <div className="min-w-max min-h-max">
+              <div className="min-w-max min-h-max"
+                ref={scheduleRef}
+                style={{ minHeight: `${24 * 100}px` }}
+              >
                 {/* Days Header */}
-                <div className="bg-white pl-[100px] mb-5 grid grid-cols-7 sticky top-0 z-20">
+                <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
                   {Day.map((d, i) => (
-                    <div key={i} className="border-b border-l border-red-400">
+                    <div key={i} className=" py-3 px-2 border-l border-b  border-gray-300">
                       <h1 className="text-center custom-font text-2xl font-bold text-[#2B2C34]">{d.day}</h1>
                     </div>
                   ))}
@@ -113,7 +204,7 @@ function App() {
                 <div className="flex">
                   {/* Time Column (sticky left) */}
                   <div className="bg-white border-t grid border-gray-300 grid-rows-24 sticky left-0 z-10">
-                    {hours12.map((t, i) => (
+                    {timeformat.map((t, i) => (
                       <div
                         key={i}
                         className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
@@ -124,12 +215,12 @@ function App() {
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="w-full bg-[#D1D1E9]10 border-t border-l border-gray-300 grid grid-cols-7 grid-rows-24 relative">
+                  <div className="w-full bg-[#D1D1E9]10 border-t border-gray-300 grid grid-cols-7 grid-rows-24 relative">
                   {/* Always show empty grid cells */}
                   {Array.from({ length: 7 * 24 }).map((_, i) => (
                     <div
                       key={`cell-${i}`}
-                      className="border-r border-b border-gray-300 min-w-[200px] min-h-[100px]"
+                      className="border-l border-b border-gray-300 min-w-[200px] min-h-[100px]"
                     />
                   ))}
 
@@ -165,12 +256,14 @@ function App() {
             </div>
 
             {/* Buttons */}
-            <div className="w-fit h-fit border border-red-400 flex flex-col gap-5 p-2">
+            <div className="w-fit h-fit flex flex-col gap-5 p-2">
               <button className="normal-button pointer-events-auto" onClick={toggleSchedForm}>
                 Add
               </button>
               <button className="normal-button pointer-events-auto" onClick={toggleSetting}>Settings</button>
-              <button className="normal-button pointer-events-auto">Download</button>
+              <button className="normal-button pointer-events-auto"
+                onClick={downloadSchedule}
+              >Download</button>
             </div>
           </div>
 
