@@ -2,6 +2,7 @@ import "./App.css";
 import Squares from "./components/ui/Squares/Squares";
 import { Times } from "./data/time";
 import { hours12 } from "./data/12hour";
+import { hours24 } from "./data/24hour";
 import { Day } from "./data/day";
 import { useState } from "react";
 import AddSchedule from "./forms/addSchedule";
@@ -11,6 +12,7 @@ function App() {
   const [showForm, setshowForm] = useState(false);
   const [showSetting, setshowSetting] = useState(false)
   const [sched, setSched] = useState([]);
+  const [timeformat, settimeformat] = useState(hours12)
 
   const [schedForm, setschedForm]= useState({
     title: "",
@@ -19,6 +21,12 @@ function App() {
     start: 0,
     end: 1
   })
+
+  const applySettings = (selectedFormat) =>{
+    settimeformat(selectedFormat === "12" ? hours12 : hours24);
+
+    toggleSetting();
+  }
 
   const handleFormChange = (key, value) => {
     setschedForm((prev) => ({ ...prev, [key]: value }));
@@ -84,6 +92,7 @@ function App() {
           {showSetting&&(
             <ScheduleSetting 
               toggleSetting={toggleSetting}
+              applySettings={applySettings}
             />
           )}
 
@@ -95,15 +104,15 @@ function App() {
           </h1>
 
           {/* Main container */}
-          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-orange-400">
+          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden">
             {/* Schedule scroll area (both horizontal & vertical) */}
-            <div className="flex-1 overflow-auto border bg-white border-blue-400 pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
+            <div className="flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max">
                 {/* Days Header */}
-                <div className="bg-white pl-[100px] mb-5 grid grid-cols-7 sticky top-0 z-20">
+                <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
                   {Day.map((d, i) => (
-                    <div key={i} className="border-b border-l border-red-400">
+                    <div key={i} className=" py-3 px-2 border-l border-b  border-gray-300">
                       <h1 className="text-center custom-font text-2xl font-bold text-[#2B2C34]">{d.day}</h1>
                     </div>
                   ))}
@@ -113,7 +122,7 @@ function App() {
                 <div className="flex">
                   {/* Time Column (sticky left) */}
                   <div className="bg-white border-t grid border-gray-300 grid-rows-24 sticky left-0 z-10">
-                    {hours12.map((t, i) => (
+                    {timeformat.map((t, i) => (
                       <div
                         key={i}
                         className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
@@ -124,12 +133,12 @@ function App() {
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="w-full bg-[#D1D1E9]10 border-t border-l border-gray-300 grid grid-cols-7 grid-rows-24 relative">
+                  <div className="w-full bg-[#D1D1E9]10 border-t border-gray-300 grid grid-cols-7 grid-rows-24 relative">
                   {/* Always show empty grid cells */}
                   {Array.from({ length: 7 * 24 }).map((_, i) => (
                     <div
                       key={`cell-${i}`}
-                      className="border-r border-b border-gray-300 min-w-[200px] min-h-[100px]"
+                      className="border-l border-b border-gray-300 min-w-[200px] min-h-[100px]"
                     />
                   ))}
 
@@ -165,7 +174,7 @@ function App() {
             </div>
 
             {/* Buttons */}
-            <div className="w-fit h-fit border border-red-400 flex flex-col gap-5 p-2">
+            <div className="w-fit h-fit flex flex-col gap-5 p-2">
               <button className="normal-button pointer-events-auto" onClick={toggleSchedForm}>
                 Add
               </button>
