@@ -19,9 +19,16 @@ function App() {
   const [sched, setSched] = useState([]);
   const [timeformat, settimeformat] = useState(hours12)
   const [lowestStart, setLowestStart] = useState(0);
-  const [overTime, setoverTime] = useState(0)
   const [highestStart, sethighestStart] = useState(16);
   const [calculatedHighest, setCalculatedHighest] = useState(16);
+
+  const defaultWorkingHour = 16
+  const [startTime, setStartTime] = useState(0)
+  const [endTime, setEndTime] = useState(16)
+  const [totalWorkingHour, setTotalWorkingHour] = useState(0)
+  const [overTime, setOverTime] = useState(0)
+  const [underTime, setUnderTime] = useState(0)
+
 
   const [schedForm, setschedForm]= useState({
     title: "",
@@ -71,35 +78,36 @@ function App() {
 
     const allStartValues = updatedSched.map(s => s.rowStart);
     const allEndValues = updatedSched.map(s => s.rowEnd);
+
     const lowestStart = Math.min(...allStartValues);
-    const highestStart = Math.max(...allStartValues);
     const highestEnd = Math.max(...allEndValues)
 
-    let calculatedHighest = (schedForm.end - highestStart) + highestStart
+    const lowestStartTime = Math.min(...allStartValues)
+    const highestEndTime = Math.max(...allEndValues)
 
-    let overTime = 0
+    let totalWorkingHour = (highestEndTime - lowestStartTime)
 
-    setLowestStart(lowestStart);
+    let overTime = (totalWorkingHour - defaultWorkingHour)
+    let underTime = (defaultWorkingHour - totalWorkingHour)
 
-    if (calculatedHighest <= 16){
-      calculatedHighest = 16 + 1
-    }else if (calculatedHighest >= 16){
-      calculatedHighest = 16 + 1
-
-      overTime = highestEnd - (lowestStart + 16)
-    }else{
-      calculatedHighest + 1
-      overTime
+    if (underTime <= 0){
+        underTime = 0
+    } else if (overTime <= 0){
+        overTime = 0
     }
 
-    setCalculatedHighest(calculatedHighest);
-    sethighestStart(highestStart)
-    setoverTime(overTime)
+    // setter
+    setStartTime(lowestStart)
+    setEndTime(highestEnd)
+    setTotalWorkingHour(totalWorkingHour)
+    setOverTime(overTime)
+    setUnderTime(underTime)
 
-    console.log("Lowest Start:", lowestStart);
-    console.log("Highest Start:", highestStart);
-    console.log("Computed Highest Start:", calculatedHighest)
-    console.log("Overtime: ", overTime)
+    console.log("Accumulated working hour", totalWorkingHour);
+    console.log("Lowest start time", lowestStartTime);
+    console.log("Highest end time", highestEndTime);
+    console.log("Over time", overTime);
+    console.log("Undert time", underTime)
 
     setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
     toggleSchedForm();
@@ -236,12 +244,12 @@ const downloadSchedule = async () => {
                   <div className="bg-white border-t border-gray-300 sticky left-0 z-10"
                     style={{
                       display: "grid",
-                      gridTemplateRows: `repeat(${(calculatedHighest + overTime)}, minmax(0, 1fr))`
+                      gridTemplateRows: `repeat(${(((defaultWorkingHour + 1) + ((overTime) + underTime) - underTime))}, minmax(0, 1fr))`
                     }}
                   >
-                    {timeformat.slice(lowestStart, ((lowestStart + calculatedHighest) + overTime)).map((t, i) => (
+                    {timeformat.slice(startTime, (endTime + 1)).map((t, i) => (
                       <div
-                        key={(calculatedHighest + overTime) + i}
+                        key={i}
                         className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
                       >
                         <h1 className="absolute -top-[9px] text-[12px] bg-white">{t.time}</h1>
@@ -254,11 +262,11 @@ const downloadSchedule = async () => {
                     style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                      gridTemplateRows: `repeat(${(calculatedHighest + overTime)}, minmax(0, 1fr))`
+                      gridTemplateRows: `repeat(${(((defaultWorkingHour + 1) + (overTime + underTime) - underTime))}, minmax(0, 1fr))`
                     }}
                   >
                   {/* Always show empty grid cells */}
-                  {Array.from({ length: 7 * (calculatedHighest + overTime) }).map((_, i) => (
+                  {Array.from({ length: 7 * (((defaultWorkingHour + 1) + (overTime + underTime) - underTime))}).map((_, i) => (
                     <div
                       key={`cell-${i}`}
                       className="border-l border-b border-gray-300 min-w-[200px] min-h-[80px]"
@@ -271,7 +279,7 @@ const downloadSchedule = async () => {
                       key={i}
                       className="absolute p-3 border border-red-400"
                       style={{
-                        top: `${(s.rowStart- lowestStart) * 80}px`,
+                        top: `${(s.rowStart- startTime) * 80}px`,
                         left: `calc((100% / 7) * ${s.column})`,
                         height: `${(s.rowEnd - s.rowStart) * 80}px`,
                         width: `calc(100% / 7)`,
