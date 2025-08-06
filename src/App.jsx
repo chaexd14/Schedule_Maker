@@ -18,6 +18,17 @@ function App() {
   const [showSetting, setshowSetting] = useState(false)
   const [sched, setSched] = useState([]);
   const [timeformat, settimeformat] = useState(hours12)
+  const [lowestStart, setLowestStart] = useState(0);
+  const [highestStart, sethighestStart] = useState(16);
+  const [calculatedHighest, setCalculatedHighest] = useState(16);
+
+  const defaultWorkingHour = 16
+  const [startTime, setStartTime] = useState(0)
+  const [endTime, setEndTime] = useState(16)
+  const [totalWorkingHour, setTotalWorkingHour] = useState(0)
+  const [overTime, setOverTime] = useState(0)
+  const [underTime, setUnderTime] = useState(0)
+
 
   const [schedForm, setschedForm]= useState({
     title: "",
@@ -48,25 +59,60 @@ function App() {
   const scheduleMark = (e) => {
     e.preventDefault();
 
-    const startTimeObj = Times.find((t) => t.value ===schedForm.start);
+    const startTimeObj = Times.find((t) => t.value === schedForm.start);
     const endTimeObj = Times.find((t) => t.value === schedForm.end);
 
-    setSched([
-      ...sched,
-      {
-        title: schedForm.title,
-        description: schedForm.description,
-        starttime: startTimeObj,
-        endtime: endTimeObj,
-        column: schedForm.day,
-        rowStart: schedForm.start,
-        rowEnd: schedForm.end,
-      },
-    ]);
+    const newSchedule = {
+      title: schedForm.title,
+      description: schedForm.description,
+      starttime: startTimeObj,
+      endtime: endTimeObj,
+      column: schedForm.day,
+      rowStart: schedForm.start,
+      rowEnd: schedForm.end,
+    };
+
+    const updatedSched = [...sched, newSchedule];
+    setSched(updatedSched);
     console.log(schedForm);
+
+    const allStartValues = updatedSched.map(s => s.rowStart);
+    const allEndValues = updatedSched.map(s => s.rowEnd);
+
+    const lowestStart = Math.min(...allStartValues);
+    const highestEnd = Math.max(...allEndValues)
+
+    const lowestStartTime = Math.min(...allStartValues)
+    const highestEndTime = Math.max(...allEndValues)
+
+    let totalWorkingHour = (highestEndTime - lowestStartTime)
+
+    let overTime = (totalWorkingHour - defaultWorkingHour)
+    let underTime = (defaultWorkingHour - totalWorkingHour)
+
+    if (underTime <= 0){
+        underTime = 0
+    } else if (overTime <= 0){
+        overTime = 0
+    }
+
+    // setter
+    setStartTime(lowestStart)
+    setEndTime(highestEnd)
+    setTotalWorkingHour(totalWorkingHour)
+    setOverTime(overTime)
+    setUnderTime(underTime)
+
+    console.log("Accumulated working hour", totalWorkingHour);
+    console.log("Lowest start time", lowestStartTime);
+    console.log("Highest end time", highestEndTime);
+    console.log("Over time", overTime);
+    console.log("Undert time", underTime)
+
     setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
     toggleSchedForm();
   };
+
 
   // download handler
 const downloadSchedule = async () => {
@@ -134,14 +180,6 @@ const downloadSchedule = async () => {
   pdf.save("schedule.pdf");
 };
 
-
-
-
-
-
-
-
-
   return (
     <>
       <main className="h-screen w-full bg-[#FFFFFE] relative">
@@ -189,7 +227,7 @@ const downloadSchedule = async () => {
               {/* Full grid content (can overflow in both directions) */}
               <div className="min-w-max min-h-max"
                 ref={scheduleRef}
-                style={{ minHeight: `${24 * 100}px` }}
+                style={{ minHeight: `${calculatedHighest * 80}px` }}
               >
                 {/* Days Header */}
                 <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
@@ -203,8 +241,13 @@ const downloadSchedule = async () => {
                 {/* Grid area */}
                 <div className="flex">
                   {/* Time Column (sticky left) */}
-                  <div className="bg-white border-t grid border-gray-300 grid-rows-24 sticky left-0 z-10">
-                    {timeformat.map((t, i) => (
+                  <div className="bg-white border-t border-gray-300 sticky left-0 z-10"
+                    style={{
+                      display: "grid",
+                      gridTemplateRows: `repeat(${(((defaultWorkingHour + 1) + ((overTime) + underTime) - underTime))}, minmax(0, 1fr))`
+                    }}
+                  >
+                    {timeformat.slice(startTime, (endTime + 1)).map((t, i) => (
                       <div
                         key={i}
                         className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
@@ -215,35 +258,51 @@ const downloadSchedule = async () => {
                   </div>
 
                   {/* Schedule Grid */}
-                  <div className="w-full bg-[#D1D1E9]10 border-t border-gray-300 grid grid-cols-7 grid-rows-24 relative">
+                  <div className="w-full bg-[#D1D1E9]10 border-t border-gray-300 relative"
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
+                      gridTemplateRows: `repeat(${(((defaultWorkingHour + 1) + (overTime + underTime) - underTime))}, minmax(0, 1fr))`
+                    }}
+                  >
                   {/* Always show empty grid cells */}
-                  {Array.from({ length: 7 * 24 }).map((_, i) => (
+                  {Array.from({ length: 7 * (((defaultWorkingHour + 1) + (overTime + underTime) - underTime))}).map((_, i) => (
                     <div
                       key={`cell-${i}`}
-                      className="border-l border-b border-gray-300 min-w-[200px] min-h-[100px]"
+                      className="border-l border-b border-gray-300 min-w-[200px] min-h-[80px]"
                     />
                   ))}
 
                   {/* Then overlay schedules using absolute positioning inside the relative parent */}
                   {sched.map((s, i) => (
                     <div
-                      key={`sched-${i}`}
+                      key={i}
                       className="absolute p-3 border border-red-400"
                       style={{
-                        top: `${s.rowStart * 100}px`,
+                        top: `${(s.rowStart- startTime) * 80}px`,
                         left: `calc((100% / 7) * ${s.column})`,
-                        height: `${(s.rowEnd - s.rowStart) * 100}px`,
+                        height: `${(s.rowEnd - s.rowStart) * 80}px`,
                         width: `calc(100% / 7)`,
                       }}
                     >
-                      <div className="flex flex-col gap-1 h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-2 px-4">
-                        <h3 className="text-2xl font-bold text-[#2B2C34] custom-font text-center">
+                      <div className="flex flex-col gap-[2px] h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-[2px] px-4">
+                        <h3 className="text-[16px] text-[#2B2C34] text-center"
+                          style={{
+                            fontFamily: "Arial, sans-serif",
+                            fontWeight: "bold"
+                          }}
+                        >
                           {s.title}
                         </h3>
                         { s.description && s.description.trim() !== "" && (
                           <p className="text-sm text-[#2B2C34] break-words mb-[6px] text-justify">{s.description}</p>
                         )}
-                        <p className="text-sm text-[#2B2C34] text-center font-semibold">
+                        <p className="text-[12px] text-[#2B2C34] text-center"
+                          style={{
+                            fontFamily: "Arial, sans-serif",
+                            fontWeight: "bold"
+                          }}
+                        >
                           {s.starttime.time} - {s.endtime.time}
                         </p>
                       </div>
