@@ -127,68 +127,74 @@ function App() {
   const downloadSchedule = async () => {
     if (!scheduleRef.current) return;
 
-    const original = scheduleRef.current;
+    const container = scheduleRef.current.cloneNode(true);
+    applyComputedStyles(scheduleRef.current, container);
 
-    const clone = original.cloneNode(true);
-    applyComputedStyles(original, clone); // Apply full style cascade
-
-    // Remove sticky from clone
-    clone.querySelectorAll("[class*='sticky']").forEach((el) => {
+    // Clean up sticky & z-index issues
+    container.querySelectorAll("[class*='sticky']").forEach((el) => {
       el.style.position = "static";
       el.style.top = "unset";
       el.style.zIndex = "0";
       el.style.backgroundColor = "#ffffff";
     });
 
-    const container = document.createElement("div");
-    container.style.position = "absolute";
-    container.style.top = "0";
-    container.style.left = "0";
-    container.style.zIndex = "-9999";
-    container.style.backgroundColor = "#ffffff";
-    container.style.width = original.scrollWidth + "px";
-    container.style.height = original.scrollHeight + "px";
-    container.style.padding = "0";
-    container.style.margin = "0";
-    container.style.fontFamily = "Arial, sans-serif"; // Force matching font
-    container.appendChild(clone);
-    document.body.appendChild(container);
+    const wrapper = document.createElement("div");
+    wrapper.style.fontFamily = "Arial, sans-serif";
+    wrapper.appendChild(container);
 
-    await new Promise((res) => setTimeout(res, 300));
+    // Add outer styles
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Schedule PDF</title>
+        <style>
+          * { box-sizing: border-box; }
+          body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+          }
+        </style>
+      </head>
+      <body>
+        <div style="max-width: 100%; margin: auto;">
+          ${wrapper.innerHTML}
+        </div>
+      </body>
+      </html>
+    `;
 
-    const canvas = await html2canvas(container, {
-      useCORS: true,
-      scale: 2,
-      backgroundColor: "#ffffff",
-      scrollX: 0,
-      scrollY: 0,
-    });
 
-    document.body.removeChild(container);
+    try {
+      const res = await fetch("http://localhost:4000/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html: fullHtml }),
+      });
 
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF("landscape", "mm", "a4");
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
+      if (!res.ok) throw new Error("Failed to download PDF");
 
-    const canvasRatio = canvas.width / canvas.height;
-    const pageRatio = pageWidth / pageHeight;
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
 
-    let renderWidth = pageWidth;
-    let renderHeight = pageHeight;
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "schedule.pdf";
+      link.click();
 
-    if (canvasRatio > pageRatio) {
-      renderHeight = renderWidth / canvasRatio;
-    } else {
-      renderWidth = renderHeight * canvasRatio;
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Failed to generate PDF.");
     }
-
-    const xOffset = (pageWidth - renderWidth) / 2;
-    const yOffset = (pageHeight - renderHeight) / 2;
-
-    pdf.addImage(imgData, "PNG", xOffset, yOffset, renderWidth, renderHeight);
-    pdf.save("schedule.pdf");
   };
+
 
 
   return (
