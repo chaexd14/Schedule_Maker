@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+   font-family: 'customFont';
+   src: url('./fonts/own.ttf') format('truetype');
+   font-weight: normal;
+   font-style: normal;
+}
+
+@layer components {
+   .custom-font{
+      font-family: 'customFont', sans-serif;
+   }
+
+   .normal-button{
+    @apply bg-[#6246EA] custom-font text-white text-xl font-medium py-2 px-8 rounded-lg border-2 border-[#6246EA] w-full
+   }
+
+   .form-label{
+      @apply custom-font text-2xl font-semibold text-[#2B2C34]
+   }
+
+   .form-input{
+      @apply border-2 rounded-lg py-2 px-5 border-[#6246EA]/30 bg-[#D1D1E9]/20 focus:outline-none hover:border-[#6246EA] transition-colors duration-300 ease-in-out text-sm
+   }
+}
