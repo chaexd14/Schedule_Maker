@@ -12,6 +12,8 @@ app.use(bodyParser.json({ limit: '10mb' }));
 
 app.post('/generate-pdf', async (req, res) => {
   try {
+  const { schedData } = req.body;
+
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -33,10 +35,13 @@ height: 1240, // approx height for A4 at 96dpi
       timeout: 60000,
     });
 
-    // Inject schedule data into localStorage BEFORE render
-    await page.evaluate((schedData) => {
-      localStorage.setItem("pdf_sched", JSON.stringify(schedData));
-    }, sched);
+        // Now inject schedData into localStorage
+    await page.evaluate((data) => {
+      localStorage.setItem("schedData", JSON.stringify(data));
+    }, schedData);
+
+        // Reload page so React picks up the injected localStorage data
+    await page.reload({ waitUntil: 'networkidle0' });
     
     // Wait for fonts and React rendering
     await page.evaluate(async () => {

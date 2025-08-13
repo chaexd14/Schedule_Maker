@@ -1,20 +1,8 @@
 import "../App.css";
-import { useSchedule } from "../context/ScheduleContext";
-import { useEffect, useState } from "react";
 import ScheduleTemplate from "../template/scheduleTemplate";
 
 function DownloadSchedule() {
 
-  const { sched: contextSched } = useSchedule();
-  const [pdfSched, setPdfSched] = useState(null);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("pdf_sched");
-    if (stored) {
-      setPdfSched(JSON.parse(stored));
-    }
-  }, []);
-  
   return (
     <>
       <div
@@ -47,7 +35,7 @@ function DownloadSchedule() {
                 height: "1080px",
               }}
             >
-              <ScheduleTemplate sched={pdfSched || contextSched} />
+              <ScheduleTemplate />
             </div>
           </div>
         </div>

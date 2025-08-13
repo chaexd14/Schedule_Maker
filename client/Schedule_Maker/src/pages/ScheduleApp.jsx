@@ -17,6 +17,7 @@ function ScheduleApp() {
     underTime,
     showForm,
     toggleSchedForm,
+    setSched,
   } = useSchedule();
 
   // Context provider for schedule
@@ -26,12 +27,16 @@ function ScheduleApp() {
     toggleSetting
   } = useSetting()
 
+  // Total number of rows in the grid
+  const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
+  
   // download handler
   const downloadSchedule = async () => {
     try {
       const res = await fetch("http://localhost:4000/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schedData: sched }),
       });
 
       if (!res.ok) throw new Error("Failed to download PDF");
@@ -109,13 +114,15 @@ function ScheduleApp() {
                     className="sticky left-0 z-10 bg-white border-t border-gray-300"
                     style={{
                       display: "grid",
-                      gridTemplateRows: `repeat(${((defaultWorkingHour + 1) + (overTime + underTime)) - underTime}, minmax(0, 1fr))`,
+                      gridTemplateRows: `repeat(${totalRows}, minmax(0, 1fr))`,
                     }}
                   >
                     {timeformat
                       .slice(
-                        startTime,  
-                        endTime < 16 ? 16 + 1 : endTime + 1 + underTime
+                        startTime,
+                        endTime < defaultWorkingHour
+                          ? defaultWorkingHour + 1
+                          : endTime + 1 + underTime
                       )
                       .map((t, i) => (
                         <div
@@ -135,12 +142,12 @@ function ScheduleApp() {
                     style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                      gridTemplateRows: `repeat(${(defaultWorkingHour + 1) + (overTime + underTime) -underTime}, minmax(0, 1fr))`,
+                      gridTemplateRows: `repeat(${totalRows}, minmax(0, 1fr))`,
                     }}
                   >
                     {/* Always show empty grid cells */}
                     {Array.from({
-                      length: 7 * ((defaultWorkingHour + 1) + (overTime + underTime) -underTime),
+                      length: 7 * totalRows,
                     }).map((_, i) => (
                       <div
                         key={`cell-${i}`}
@@ -200,6 +207,15 @@ function ScheduleApp() {
               >
                 Add
               </button>
+
+              <button 
+                className="pointer-events-auto normal-button"
+                onClick={() => {localStorage.removeItem("schedData");
+                setSched([])
+              }}>
+                Clear Schedule
+              </button>
+
               <button
                 className="pointer-events-auto normal-button"
                 onClick={toggleSetting}
