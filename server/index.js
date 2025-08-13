@@ -33,6 +33,11 @@ height: 1240, // approx height for A4 at 96dpi
       timeout: 60000,
     });
 
+    // Inject schedule data into localStorage BEFORE render
+    await page.evaluate((schedData) => {
+      localStorage.setItem("pdf_sched", JSON.stringify(schedData));
+    }, sched);
+    
     // Wait for fonts and React rendering
     await page.evaluate(async () => {
       await document.fonts.ready;

@@ -1,175 +1,75 @@
 import Squares from "../components/ui/Squares/Squares";
-import { Times } from "../data/time";
-import { hours12 } from "../data/12hour";
-import { hours24 } from "../data/24hour";
 import { Day } from "../data/day";
-import { useState } from "react";
 import AddSchedule from "../forms/addSchedule";
 import ScheduleSetting from "../forms/ScheduleSetting";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
-import { useRef } from "react";
+import { useSchedule } from "../context/ScheduleContext";
+import { useSetting } from "../context/SettingsContext";
 
 function ScheduleApp() {
-  const [showForm, setshowForm] = useState(false);
-  const [showSetting, setshowSetting] = useState(false);
-  const [sched, setSched] = useState([]);
-  const [timeformat, settimeformat] = useState(hours12);
 
-  const defaultWorkingHour = 16;
-  const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(16);
-  const [totalWorkingHour, setTotalWorkingHour] = useState(0);
-  const [overTime, setOverTime] = useState(0);
-  const [underTime, setUnderTime] = useState(0);
+  // Context provider for schedule
+  const {
+    defaultWorkingHour,
+    sched,
+    startTime,
+    endTime,
+    overTime,
+    underTime,
+    showForm,
+    toggleSchedForm,
+  } = useSchedule();
 
-  
-  const [schedForm, setschedForm] = useState({
-    title: "",
-    description: "",
-    day: 0,
-    start: 0,
-    end: 1,
-  });
-
-  const applySettings = (selectedFormat) => {
-    settimeformat(selectedFormat === "12" ? hours12 : hours24);
-
-    toggleSetting();
-  };
-
-  const handleFormChange = (key, value) => {
-    setschedForm((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const toggleSchedForm = () => {
-    setshowForm((prev) => !prev);
-  };
-
-  const toggleSetting = () => {
-    setshowSetting((prev) => !prev);
-  };
-
-  const scheduleMark = (e) => {
-    e.preventDefault();
-
-    const startTimeObj = Times.find((t) => t.value === schedForm.start);
-    const endTimeObj = Times.find((t) => t.value === schedForm.end);
-
-    const newSchedule = {
-      title: schedForm.title,
-      description: schedForm.description,
-      starttime: startTimeObj,
-      endtime: endTimeObj,
-      column: schedForm.day,
-      rowStart: schedForm.start,
-      rowEnd: schedForm.end,
-    };
-
-    const updatedSched = [...sched, newSchedule];
-    setSched(updatedSched);
-    console.log(schedForm);
-
-    const allStartValues = updatedSched.map((s) => s.rowStart);
-    const allEndValues = updatedSched.map((s) => s.rowEnd);
-
-    const lowestStart = Math.min(...allStartValues);
-    const highestEnd = Math.max(...allEndValues);
-
-    const lowestStartTime = Math.min(...allStartValues);
-    const highestEndTime = Math.max(...allEndValues);
-
-    let totalWorkingHour = highestEndTime - lowestStartTime;
-
-    let overTime = totalWorkingHour - defaultWorkingHour;
-    let underTime = defaultWorkingHour - totalWorkingHour;
-
-    if (underTime <= 0) {
-      underTime = 0;
-    } else if (overTime <= 0) {
-      overTime = 0;
-    }
-
-    // setter
-    setStartTime(lowestStart);
-    setEndTime(highestEnd);
-    setTotalWorkingHour(totalWorkingHour);
-    setOverTime(overTime);
-    setUnderTime(underTime);
-
-    console.log("Accumulated working hour", totalWorkingHour);
-    console.log("Lowest start time", lowestStartTime);
-    console.log("Highest end time", highestEndTime);
-    console.log("Over time", overTime);
-    console.log("Undert time", underTime);
-
-    setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
-    toggleSchedForm();
-  };
-
-  const applyComputedStyles = (source, target) => {
-    const computed = getComputedStyle(source);
-    for (let prop of computed) {
-      target.style.setProperty(prop, computed.getPropertyValue(prop), computed.getPropertyPriority(prop));
-    }
-
-    for (let i = 0; i < source.children.length; i++) {
-      applyComputedStyles(source.children[i], target.children[i]);
-    }
-  };
+  // Context provider for schedule
+  const {
+    timeformat,
+    showSetting,
+    toggleSetting
+  } = useSetting()
 
   // download handler
-const downloadSchedule = async () => {
-  try {
-    const res = await fetch('http://localhost:4000/generate-pdf', {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-    });
+  const downloadSchedule = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
 
-    if (!res.ok) throw new Error("Failed to download PDF");
+      if (!res.ok) throw new Error("Failed to download PDF");
 
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "schedule.pdf";
-    link.click();
-    URL.revokeObjectURL(url);
-  } catch (err) {
-    console.error("Download error:", err);
-  }
-};
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "schedule.pdf";
+      link.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+    }
+  };
 
   return (
     <>
-           <main className="h-screen w-full bg-[#FFFFFE] relative">
+      <main className="h-screen w-full bg-[#FFFFFE] relative">
         {/* Hoverable background */}
         <div className="absolute inset-0 z-0 w-full h-full">
           <Squares
-            speed={0.2}
+            speed={0.3}
             squareSize={40}
             direction="diagonal"
             borderColor="#D1D1E9"
             hoverFillColor="#D1D1E9"
           />
         </div>
-
+      
         {/* Main content — allow hover to pass through */}
         <section className="relative z-10 flex flex-col items-center w-full h-screen px-10 pointer-events-none">
           {/* Forms */}
           {showForm && (
-            <AddSchedule
-              schedForm={schedForm}
-              toggleSchedForm={toggleSchedForm}
-              handleFormChange={handleFormChange}
-              scheduleMark={scheduleMark}
-            />
+            <AddSchedule />
           )}
           {showSetting && (
-            <ScheduleSetting
-              toggleSetting={toggleSetting}
-              applySettings={applySettings}
-            />
+            <ScheduleSetting />
           )}
 
           <h1 className="w-fit custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto my-2">

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useSetting } from "../context/SettingsContext";
 
-function ScheduleSetting({
-  toggleSetting,
-  applySettings
-}) {
+function ScheduleSetting() {
+  const {
+    toggleSetting,
+    applySettings
+  } = useSetting()
   
   const [selectedFormat, setSelectedFormat] = useState("12"); // default
 
@@ -15,7 +17,7 @@ function ScheduleSetting({
   return (
     <>
       <div className="absolute h-full w-full bg-[#D1D1E9]/50 z-50 border border-red-400 pointer-events-auto">
-        <div className="h-full w-full flex justify-center items-center">
+        <div className="flex items-center justify-center w-full h-full">
           <form className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto"
             onSubmit={handleSubmit}
           >
@@ -26,7 +28,7 @@ function ScheduleSetting({
 
             <div className="flex flex-col">
               <label className="form-label">Time Format</label>
-              <select className="w-full form-input px-2"
+              <select className="w-full px-2 form-input"
                 value={selectedFormat}
                 onChange={(e) => setSelectedFormat(e.target.value)}
               >
@@ -36,7 +38,7 @@ function ScheduleSetting({
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-center gap-2 items-center">
+            <div className="flex items-center justify-center gap-2">
               <button type="submit" className="text-lg normal-button">
                 Apply
               </button>

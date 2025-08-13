@@ -1,84 +1,88 @@
-import "../App.css"
-import { Day } from "../data/day"
+import "../App.css";
+import { Day } from "../data/day";
 import { hours12 } from "../data/12hour";
+import { useSchedule } from "../context/ScheduleContext";
+import { useSetting } from "../context/SettingsContext";
+
 
 function ScheduleTemplate() {
-  
-    const sched = ([]);
-    const timeformat = hours12
-    const defaultWorkingHour = 8
-    const startTime = 0
-    const endTime = 3
-    const totalWorkingHour = 3
-    const overTime = 0
-    const underTime = 13
-    
+
+   const {
+    defaultWorkingHour,
+    sched,
+    startTime,
+    endTime,
+    overTime,
+    underTime,
+  } = useSchedule();
+
+  const {
+    timeformat,
+  } = useSetting()  
+
+
+  // Total number of rows in the grid
+  const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
+
   return (
     <>
-    <div
-    className="border border-blue-400 h-fit"
- id="pdf-wrapper"
-  style={{
-    width: '1754px',
-    height: '1240px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFE',
-    overflow: 'hidden',
-  }}
-    >
-      <div className={` bg-[#FFFFFE]`}
-    id="schedule-container"
-    style={{
-      width: '1920px',
-      height: '1080px',
-      transform: 'scale(0.95)',
-      backgroundColor: '#FFFFFE',
-    }}
+      <div
+        className="bg-white border-2 border-[#2B2C34] z-50 rounded-md"
+        id="schedule-container"
+        style={{
+          width: "1920px",
+          height: "1080px",
+          backgroundColor: "#FFFFFE",
+          transform: "scale(0.95)",
+        }}
       >
-        <section className="flex flex-col items-center justify-center w-full h-full border border-blue-400">
-          <div className="flex w-full h-full overflow-hidden border border-red-400">
-            <div className={`flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent`}
-            >
-              {/* Full grid content (can overflow in both directions) */}
-              <div
-                className="p-0 m-0 min-w-max min-h-max"
-                style={{ minHeight: `${defaultWorkingHour * 80}px` }}
-              >
+        <section className="z-50 flex flex-col items-center justify-center w-full h-full">
+          <div className="flex w-full h-full overflow-visible">
+            <div className="flex-1 inter-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent">
+              {/* Full grid content */}
+              <div className="flex flex-col w-full h-full gap-3 p-0 m-0">
                 {/* Days Header */}
-                <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
-                  {Day.map((d, i) => (
-                    <div
-                      key={i}
-                      className="px-2 py-3 border-b border-l border-gray-300 "
-                    >
-                      <h1 className="text-center custom-font text-2xl font-bold text-[#2B2C34]">
-                        {d.day}
-                      </h1>
-                    </div>
-                  ))}
+                <div className="flex flex-row items-center w-full">
+                  <div className="h-[50px] w-[100px]" />
+                  <div
+                    className="sticky top-0 z-20 grid w-full grid-cols-7 "
+                    style={{ height: "50px" }}
+                  >
+                    {Day.map((d, i) => (
+                      <div
+                        key={i}
+                        className="px-2 py-3 border-b border-l border-gray-300"
+                      >
+                        <h1 className="text-center custom-font text-2xl font-bold text-[#2B2C34]">
+                          {d.day}
+                        </h1>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Grid area */}
-                <div className="flex">
-                  {/* Time Column (sticky left) */}
+                <div className="flex flex-row justify-center items-center h-[calc(100%-50px)]">
+                  {/* Time Column */}
                   <div
-                    className="sticky left-0 z-10 bg-white border-t border-gray-300"
+                    className="sticky z-10 w-[100px]"
                     style={{
                       display: "grid",
-                      gridTemplateRows: `repeat(${((defaultWorkingHour + 1) + (overTime + underTime)) - underTime}, minmax(0, 1fr))`,
+                      gridTemplateRows: `repeat(${totalRows}, 1fr)`,
+                      height: "100%",
                     }}
                   >
                     {timeformat
                       .slice(
-                        startTime,  
-                        endTime < defaultWorkingHour ? defaultWorkingHour + 1 : endTime + 1 + underTime
+                        startTime,
+                        endTime < defaultWorkingHour
+                          ? defaultWorkingHour + 1
+                          : endTime + 1 + underTime
                       )
                       .map((t, i) => (
                         <div
                           key={i}
-                          className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
+                          className="relative flex items-center justify-center border-t border-gray-300"
                         >
                           <h1 className="absolute -top-[9px] text-[12px] bg-white">
                             {t.time}
@@ -89,41 +93,42 @@ function ScheduleTemplate() {
 
                   {/* Schedule Grid */}
                   <div
-                    className="w-full bg-[#D1D1E9]10 border-t border-gray-300 relative"
+                    className="w-full h-full bg-[#D1D1E9]10 relative"
                     style={{
                       display: "grid",
-                      gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
-                      gridTemplateRows: `repeat(${(defaultWorkingHour + 1) + (overTime + underTime) -underTime}, minmax(0, 1fr))`,
+                      gridTemplateColumns: "repeat(7, 1fr)",
+                      gridTemplateRows: `repeat(${totalRows}, 1fr)`,
                     }}
                   >
-                    {/* Always show empty grid cells */}
-                    {Array.from({
-                      length: 7 * ((defaultWorkingHour + 1) + (overTime + underTime) -underTime),
-                    }).map((_, i) => (
+                    {/* Empty grid cells */}
+                    {Array.from({ length: 7 * totalRows }).map((_, i) => (
                       <div
                         key={`cell-${i}`}
-                        className="border-l border-b border-gray-300 min-w-[200px] min-h-[75px]"
+                        className="w-full h-full border-t border-l border-gray-300"
                       />
                     ))}
 
-                    {/* Then overlay schedules using absolute positioning inside the relative parent */}
+                    {/* Event overlays */}
                     {sched.map((s, i) => (
                       <div
                         key={i}
                         className="absolute p-1 border border-red-400"
                         style={{
-                          top: `${(s.rowStart - startTime) * 75}px`,
+                          top: `calc((100% / ${totalRows}) * ${
+                            s.rowStart - startTime
+                          })`,
+                          height: `calc((100% / ${totalRows}) * ${
+                            s.rowEnd - s.rowStart
+                          })`,
                           left: `calc((100% / 7) * ${s.column})`,
-                          height: `${(s.rowEnd - s.rowStart) * 75}px`,
                           width: `calc(100% / 7)`,
                         }}
                       >
                         <div className="flex flex-col gap-[2px] h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-[2px] px-2">
                           <h3
-                            className="text-[16px] text-[#2B2C34] text-center"
+                            className="text-[16px] text-[#2B2C34] text-center font-bold"
                             style={{
                               fontFamily: "Arial, sans-serif",
-                              fontWeight: "bold",
                             }}
                           >
                             {s.title}
@@ -134,10 +139,9 @@ function ScheduleTemplate() {
                             </p>
                           )}
                           <p
-                            className="text-[12px] text-[#2B2C34] text-center"
+                            className="text-[12px] text-[#2B2C34] text-center font-bold"
                             style={{
                               fontFamily: "Arial, sans-serif",
-                              fontWeight: "bold",
                             }}
                           >
                             {s.starttime.time} - {s.endtime.time}
@@ -152,9 +156,8 @@ function ScheduleTemplate() {
           </div>
         </section>
       </div>
-      </div>
     </>
-  )
+  );
 }
 
-export default ScheduleTemplate
+export default ScheduleTemplate;

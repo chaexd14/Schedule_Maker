@@ -1,16 +1,22 @@
 import { Times } from "../data/time";
 import { Day } from "../data/day";
+import { useSchedule } from "../context/ScheduleContext";
 
-function AddSchedule({
-  schedForm,
-  handleFormChange,
-  toggleSchedForm,
-  scheduleMark,
-}) {
+function AddSchedule() {
+  const {
+    schedForm,
+    handleFormChange,
+    toggleSchedForm,
+    scheduleMark,
+    showForm,
+  } = useSchedule();
+
+  if (!showForm) return null;
+  
   return (
     <>
       <div className="absolute h-full w-full bg-[#D1D1E9]/50 z-50 border border-red-400 pointer-events-auto">
-        <div className="h-full w-full flex justify-center items-center">
+        <div className="flex items-center justify-center w-full h-full">
           <form
             className="flex flex-col gap-3 bg-white w-[400px] border-2 border-[#2B2C34] rounded-lg py-8 px-10 pointer-events-auto"
             onSubmit={scheduleMark}
@@ -45,7 +51,7 @@ function AddSchedule({
             <div className="flex flex-col">
               <label className="form-label">Day</label>
               <select
-                className="form-input px-2"
+                className="px-2 form-input"
                 value={schedForm.day}
                 onChange={(e) =>
                   handleFormChange("day", parseInt(e.target.value))
@@ -59,12 +65,12 @@ function AddSchedule({
               </select>
             </div>
 
-            <div className="w-full flex justify-center items-center gap-2">
-              <div className="w-full flex flex-col">
+            <div className="flex items-center justify-center w-full gap-2">
+              <div className="flex flex-col w-full">
                 <label className="form-label">Start</label>
                 <select
                   id=""
-                  className="form-input px-2"
+                  className="px-2 form-input"
                   value={schedForm.start}
                   onChange={(e) =>
                     handleFormChange("start", parseInt(e.target.value))
@@ -78,11 +84,11 @@ function AddSchedule({
                 </select>
               </div>
 
-              <div className="w-full flex flex-col">
+              <div className="flex flex-col w-full">
                 <label className="form-label">End</label>
                 <select
                   id=""
-                  className="w-full form-input px-2"
+                  className="w-full px-2 form-input"
                   value={schedForm.end}
                   onChange={(e) =>
                     handleFormChange("end", parseInt(e.target.value))
@@ -97,7 +103,7 @@ function AddSchedule({
               </div>
             </div>
 
-            <div className="flex justify-center gap-2 items-center">
+            <div className="flex items-center justify-center gap-2">
               <button type="submit" className="text-lg normal-button">
                 Add
               </button>

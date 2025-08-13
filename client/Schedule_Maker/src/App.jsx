@@ -1,23 +1,22 @@
 import "./App.css";
-
-
 import ScheduleApp from "./pages/ScheduleApp";
-import ScheduleTemplate from "./template/scheduleTemplate";
-import PrintSchedule from "./pages/PrintSchedule";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import DownloadSchedule from "./pages/DownloadSchedule";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ScheduleProvider } from "./context/ScheduleContext";
+import { SettingsProvider } from "./context/SettingsContext";
 
 function App() {
-
   return (
-    <>
-      <Routes>
-        <Route path="/print-schedule" element={<ScheduleTemplate />} />
-        <Route path="/" element={<ScheduleApp />}/>
-      </Routes>
-
- 
-
-    </>
+    <BrowserRouter>
+      <ScheduleProvider>
+        <SettingsProvider>
+          <Routes>
+            <Route path="/" element={<ScheduleApp />} />
+            <Route path="/print-schedule" element={<DownloadSchedule />} />
+          </Routes>
+        </SettingsProvider>
+      </ScheduleProvider>
+    </BrowserRouter>
   );
 }
 
