@@ -30,12 +30,15 @@ function ScheduleApp() {
   // Total number of rows in the grid
   const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
   
+
+  
   // download handler
   const downloadSchedule = async () => {
     try {
       const res = await fetch("http://localhost:4000/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schedData: sched }),
         body: JSON.stringify({ schedData: sched }),
       });
 
@@ -85,7 +88,7 @@ function ScheduleApp() {
           </h1>
 
           {/* Main container */}
-          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden">
+          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-red-400">
             {/* Schedule scroll area (both horizontal & vertical) */}
             <div className="flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
