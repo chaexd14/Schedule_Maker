@@ -1,6 +1,5 @@
 import "../App.css";
 import { Day } from "../data/day";
-import { hours12 } from "../data/12hour";
 import { useSchedule } from "../context/ScheduleContext";
 import { useSetting } from "../context/SettingsContext";
 

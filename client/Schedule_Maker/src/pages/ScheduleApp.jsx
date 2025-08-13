@@ -17,6 +17,7 @@ function ScheduleApp() {
     underTime,
     showForm,
     toggleSchedForm,
+    setSched,
   } = useSchedule();
 
   // Context provider for schedule
@@ -26,12 +27,14 @@ function ScheduleApp() {
     toggleSetting
   } = useSetting()
 
+  
   // download handler
   const downloadSchedule = async () => {
     try {
       const res = await fetch("http://localhost:4000/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schedData: sched }),
       });
 
       if (!res.ok) throw new Error("Failed to download PDF");
@@ -80,7 +83,7 @@ function ScheduleApp() {
           </h1>
 
           {/* Main container */}
-          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden">
+          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-red-400">
             {/* Schedule scroll area (both horizontal & vertical) */}
             <div className="flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
@@ -200,6 +203,15 @@ function ScheduleApp() {
               >
                 Add
               </button>
+
+              <button 
+                className="pointer-events-auto normal-button"
+                onClick={() => {localStorage.removeItem("schedData");
+                setSched([])
+              }}>
+                Clear Schedule
+              </button>
+
               <button
                 className="pointer-events-auto normal-button"
                 onClick={toggleSetting}

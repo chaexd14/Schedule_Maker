@@ -1,5 +1,6 @@
 import { createContext, useState, useContext } from "react";
 import { Times } from "../data/time";
+import { useEffect } from "react";
 
 const ScheduleContext = createContext();
 
@@ -15,6 +16,7 @@ export function ScheduleProvider({ children }) {
   const [totalWorkingHour, setTotalWorkingHour] = useState(0);
   const [overTime, setOverTime] = useState(0);
   const [underTime, setUnderTime] = useState(0);
+  
   const [sched, setSched] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
@@ -74,7 +76,22 @@ export function ScheduleProvider({ children }) {
 
     setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
     toggleSchedForm();
+
   };
+
+  useEffect(() => {
+    const saved = localStorage.getItem("schedData");
+    if (saved) {
+      setSched(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save data to localStorage whenever sched changes
+  useEffect(() => {
+    if (sched.length > 0) {
+      localStorage.setItem("schedData", JSON.stringify(sched));
+    }
+  }, [sched]);
 
   return (
     <ScheduleContext.Provider
@@ -88,6 +105,7 @@ export function ScheduleProvider({ children }) {
         overTime,
         underTime,
         showForm,
+        setSched,
         toggleSchedForm,
         handleFormChange,
         scheduleMark,
