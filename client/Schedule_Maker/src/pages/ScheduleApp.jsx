@@ -6,7 +6,6 @@ import { useSchedule } from "../context/ScheduleContext";
 import { useSetting } from "../context/SettingsContext";
 
 function ScheduleApp() {
-
   // Context provider for schedule
   const {
     defaultWorkingHour,
@@ -18,28 +17,34 @@ function ScheduleApp() {
     showForm,
     toggleSchedForm,
     setSched,
+    totalWorkingHour,
   } = useSchedule();
 
   // Context provider for schedule
-  const {
-    timeformat,
-    showSetting,
-    toggleSetting
-  } = useSetting()
+  const { timeformat, showSetting, toggleSetting } = useSetting();
 
   // Total number of rows in the grid
   const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
-  
 
-  
   // download handler
   const downloadSchedule = async () => {
+    console.log("Sched before sending:", sched);
+
     try {
+      const schedDataToSend = {
+        defaultWorkingHour,
+        sched,
+        startTime,
+        endTime,
+        totalWorkingHour,
+        overTime,
+        underTime,
+      };
+
       const res = await fetch("http://localhost:4000/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ schedData: sched }),
-        body: JSON.stringify({ schedData: sched }),
+        body: JSON.stringify({ schedData: schedDataToSend }),
       });
 
       if (!res.ok) throw new Error("Failed to download PDF");
@@ -69,16 +74,12 @@ function ScheduleApp() {
             hoverFillColor="#D1D1E9"
           />
         </div>
-      
+
         {/* Main content — allow hover to pass through */}
         <section className="relative z-10 flex flex-col items-center w-full h-screen px-10 pointer-events-none">
           {/* Forms */}
-          {showForm && (
-            <AddSchedule />
-          )}
-          {showSetting && (
-            <ScheduleSetting />
-          )}
+          {showForm && <AddSchedule />}
+          {showSetting && <ScheduleSetting />}
 
           <h1 className="w-fit custom-font text-6xl text-center font-extrabold text-[#2B2C34] pointer-events-auto my-2">
             My
@@ -94,7 +95,7 @@ function ScheduleApp() {
               {/* Full grid content (can overflow in both directions) */}
               <div
                 className="p-0 m-0 min-w-max min-h-max"
-                style={{ minHeight: `${defaultWorkingHour * 80}px` }}
+                style={{ minHeight: `${totalRows * 80}px` }}
               >
                 {/* Days Header */}
                 <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
@@ -162,7 +163,7 @@ function ScheduleApp() {
                     {sched.map((s, i) => (
                       <div
                         key={i}
-                        className="absolute p-1 border border-red-400"
+                        className="absolute p-2"
                         style={{
                           top: `${(s.rowStart - startTime) * 80}px`,
                           left: `calc((100% / 7) * ${s.column})`,
@@ -170,30 +171,32 @@ function ScheduleApp() {
                           width: `calc(100% / 7)`,
                         }}
                       >
-                        <div className="flex flex-col gap-[2px] h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-[2px] px-2">
-                          <h3
-                            className="text-[16px] text-[#2B2C34] text-center"
-                            style={{
-                              fontFamily: "Arial, sans-serif",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {s.title}
-                          </h3>
-                          {s.description && s.description.trim() !== "" && (
-                            <p className="text-sm text-[#2B2C34] break-words mb-[6px] text-justify">
-                              {s.description}
+                        <div className="flex flex-col justify-start h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-[8px] px-4">
+                          <div className="flex flex-col h-full">
+                            <h3
+                              className="text-[16px] text-[#2B2C34] text-center h-fit"
+                              style={{
+                                fontFamily: "Arial, sans-serif",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {s.title}
+                            </h3>
+                            {s.description && s.description.trim() !== "" && (
+                              <p className="text-sm text-[#2B2C34] break-words text-justify h-fit my-2">
+                                {s.description}
+                              </p>
+                            )}
+                            <p
+                              className="text-[12px] text-[#2B2C34] text-center h-full"
+                              style={{
+                                fontFamily: "Arial, sans-serif",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {s.starttime.time} - {s.endtime.time}
                             </p>
-                          )}
-                          <p
-                            className="text-[12px] text-[#2B2C34] text-center"
-                            style={{
-                              fontFamily: "Arial, sans-serif",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            {s.starttime.time} - {s.endtime.time}
-                          </p>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -211,11 +214,13 @@ function ScheduleApp() {
                 Add
               </button>
 
-              <button 
+              <button
                 className="pointer-events-auto normal-button"
-                onClick={() => {localStorage.removeItem("schedData");
-                setSched([])
-              }}>
+                onClick={() => {
+                  localStorage.removeItem("schedData");
+                  setSched([]);
+                }}
+              >
                 Clear Schedule
               </button>
 
@@ -236,7 +241,7 @@ function ScheduleApp() {
         </section>
       </main>
     </>
-  )
+  );
 }
 
-export default ScheduleApp
+export default ScheduleApp;

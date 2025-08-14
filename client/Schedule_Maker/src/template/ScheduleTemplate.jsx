@@ -2,6 +2,7 @@ import "../App.css";
 import { Day } from "../data/day";
 import { useSchedule } from "../context/ScheduleContext";
 import { useSetting } from "../context/SettingsContext";
+import { useEffect } from "react";
 
 
 function ScheduleTemplate() {
@@ -19,10 +20,13 @@ function ScheduleTemplate() {
     timeformat,
   } = useSetting()  
 
+    const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
 
   // Total number of rows in the grid
-  const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
-
+  useEffect(() => {
+    console.log("Total rows:", totalRows);
+  }, [totalRows]);
+  
   return (
     <>
       <div
@@ -111,7 +115,7 @@ function ScheduleTemplate() {
                     {sched.map((s, i) => (
                       <div
                         key={i}
-                        className="absolute p-1 border border-red-400"
+                        className="absolute p-2"
                         style={{
                           top: `calc((100% / ${totalRows}) * ${
                             s.rowStart - startTime
@@ -123,28 +127,32 @@ function ScheduleTemplate() {
                           width: `calc(100% / 7)`,
                         }}
                       >
-                        <div className="flex flex-col gap-[2px] h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-[2px] px-2">
-                          <h3
-                            className="text-[16px] text-[#2B2C34] text-center font-bold"
-                            style={{
-                              fontFamily: "Arial, sans-serif",
-                            }}
-                          >
-                            {s.title}
-                          </h3>
-                          {s.description && s.description.trim() !== "" && (
-                            <p className="text-sm text-[#2B2C34] break-words mb-[6px] text-justify">
-                              {s.description}
+                        <div className="flex flex-col justify-start h-full border-2 border-[#6246EA] bg-[#D1D1E9] rounded-md overflow-auto scrollbar-none py-[8px] px-4">
+                          <div className="flex flex-col h-full">
+                            <h3
+                              className="text-[16px] text-[#2B2C34] text-center h-fit"
+                              style={{
+                                fontFamily: "Arial, sans-serif",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {s.title}
+                            </h3>
+                            {s.description && s.description.trim() !== "" && (
+                              <p className="text-sm text-[#2B2C34] break-words text-justify h-fit my-2">
+                                {s.description}
+                              </p>
+                            )}
+                            <p
+                              className="text-[12px] text-[#2B2C34] text-center h-full"
+                              style={{
+                                fontFamily: "Arial, sans-serif",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {s.starttime.time} - {s.endtime.time}
                             </p>
-                          )}
-                          <p
-                            className="text-[12px] text-[#2B2C34] text-center font-bold"
-                            style={{
-                              fontFamily: "Arial, sans-serif",
-                            }}
-                          >
-                            {s.starttime.time} - {s.endtime.time}
-                          </p>
+                          </div>
                         </div>
                       </div>
                     ))}

@@ -9,14 +9,14 @@ export function useSchedule() {
 }
 
 export function ScheduleProvider({ children }) {
-  const defaultWorkingHour = 16;
+  const defaultWorkingHour = 12;
 
   const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(16);
+  const [endTime, setEndTime] = useState(12);
   const [totalWorkingHour, setTotalWorkingHour] = useState(0);
   const [overTime, setOverTime] = useState(0);
   const [underTime, setUnderTime] = useState(0);
-  
+
   const [sched, setSched] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
@@ -68,16 +68,20 @@ export function ScheduleProvider({ children }) {
     if (under <= 0) under = 0;
     if (over <= 0) over = 0;
 
-    console.log(sched)
     setStartTime(lowestStartTime);
     setEndTime(highestEndTime);
     setTotalWorkingHour(total);
     setOverTime(over);
     setUnderTime(under);
 
+    console.log(sched);
+    console.log(
+      `total: ${total} overtime: ${overTime} undertime: ${underTime}`
+    );
+    console.log(`total: ${total} overtime: ${over} undertime: ${under}`);
+
     setschedForm({ title: "", description: "", day: 0, start: 0, end: 1 });
     toggleSchedForm();
-
   };
 
   useEffect(() => {
@@ -87,12 +91,32 @@ export function ScheduleProvider({ children }) {
     }
   }, []);
 
-  // Save data to localStorage whenever sched changes
+  // Save data to localStorage whenever sched or time-related states change
   useEffect(() => {
-    if (sched.length > 0) {
-      localStorage.setItem("schedData", JSON.stringify(sched));
+    const savedData = localStorage.getItem("schedData");
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+
+      setSched(Array.isArray(parsed.sched) ? parsed.sched : []);
+      setStartTime(parsed.startTime ?? 0);
+      setEndTime(parsed.endTime ?? 12);
+      setTotalWorkingHour(parsed.totalWorkingHour ?? 0);
+      setOverTime(parsed.overTime ?? 0);
+      setUnderTime(parsed.underTime ?? 0);
     }
-  }, [sched]);
+  }, []);
+
+  useEffect(() => {
+    const dataToSave = {
+      sched,
+      startTime,
+      endTime,
+      totalWorkingHour,
+      overTime,
+      underTime,
+    };
+    localStorage.setItem("schedData", JSON.stringify(dataToSave));
+  }, [sched, startTime, endTime, totalWorkingHour, overTime, underTime]);
 
   return (
     <ScheduleContext.Provider
