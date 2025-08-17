@@ -1,6 +1,6 @@
 import { createContext, useState, useContext } from "react";
-import { Times } from "../data/time";
 import { useEffect } from "react";
+import { useSetting } from "./SettingsContext";
 
 const ScheduleContext = createContext();
 
@@ -9,10 +9,12 @@ export function useSchedule() {
 }
 
 export function ScheduleProvider({ children }) {
-  const defaultWorkingHour = 12;
+  const { timeIncrement } = useSetting()
+
+  const defaultWorkingHour = 8;
 
   const [startTime, setStartTime] = useState(0);
-  const [endTime, setEndTime] = useState(12);
+  const [endTime, setEndTime] = useState(8);
   const [totalWorkingHour, setTotalWorkingHour] = useState(0);
   const [overTime, setOverTime] = useState(0);
   const [underTime, setUnderTime] = useState(0);
@@ -39,8 +41,14 @@ export function ScheduleProvider({ children }) {
   const scheduleMark = (e) => {
     e.preventDefault();
 
-    const startTimeObj = Times.find((t) => t.value === schedForm.start);
-    const endTimeObj = Times.find((t) => t.value === schedForm.end);
+    const startTimeObj = timeIncrement.find((t) => t.id === schedForm.start);
+    const endTimeObj = timeIncrement.find((t) => t.id === schedForm.end);
+
+    let adjustedStart = schedForm.start;
+
+    if (schedForm.start > 0){
+      adjustedStart = schedForm.start - 1
+    }
 
     const newSchedule = {
       title: schedForm.title,

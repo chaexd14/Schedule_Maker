@@ -21,7 +21,7 @@ function ScheduleApp() {
   } = useSchedule();
 
   // Context provider for schedule
-  const { timeformat, showSetting, toggleSetting } = useSetting();
+  const { clockType, timeIncrement, showSetting, toggleSetting } = useSetting();
 
   // Total number of rows in the grid
   const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
@@ -89,7 +89,7 @@ function ScheduleApp() {
           </h1>
 
           {/* Main container */}
-          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden border border-red-400">
+          <div className="flex flex-row w-full h-[calc(100vh-7rem)] overflow-hidden">
             {/* Schedule scroll area (both horizontal & vertical) */}
             <div className="flex-1 overflow-auto border-2 rounded-md bg-white border-[#2B2C34]  pointer-events-auto scrollbar-thin scrollbar-thumb-[#6246EA]/80 scrollbar-track-transparent mr-4">
               {/* Full grid content (can overflow in both directions) */}
@@ -98,7 +98,7 @@ function ScheduleApp() {
                 style={{ minHeight: `${totalRows * 80}px` }}
               >
                 {/* Days Header */}
-                <div className="bg-white pl-[100px] mb-3 grid grid-cols-7 sticky top-0 z-20">
+                <div className="bg-white pl-[180px] mb-3 grid grid-cols-7 sticky top-0 z-20">
                   {Day.map((d, i) => (
                     <div
                       key={i}
@@ -121,7 +121,7 @@ function ScheduleApp() {
                       gridTemplateRows: `repeat(${totalRows}, minmax(0, 1fr))`,
                     }}
                   >
-                    {timeformat
+                    {timeIncrement
                       .slice(
                         startTime,
                         endTime < defaultWorkingHour
@@ -131,10 +131,14 @@ function ScheduleApp() {
                       .map((t, i) => (
                         <div
                           key={i}
-                          className="relative w-[100px] text-xs flex items-center justify-center border-b border-gray-300"
+                          className="w-[180px] text-xs flex  items-center justify-center gap-2 border-b border-gray-300"
                         >
-                          <h1 className="absolute -top-[9px] text-[12px] bg-white">
-                            {t.time}
+                          <h1 className="text-[14px] bg-white font-semibold">
+                            {t.time1}
+                          </h1>
+                          <span className="font-semibold">-</span>
+                          <h1 className="text-[14px] bg-white font-semibold">
+                            {t.time2}
                           </h1>
                         </div>
                       ))}
@@ -155,7 +159,7 @@ function ScheduleApp() {
                     }).map((_, i) => (
                       <div
                         key={`cell-${i}`}
-                        className="border-l border-b border-gray-300 min-w-[200px] min-h-[80px]"
+                        className="border-l border-b border-gray-200 min-w-[200px] min-h-[80px]"
                       />
                     ))}
 
@@ -194,7 +198,7 @@ function ScheduleApp() {
                                 fontWeight: "bold",
                               }}
                             >
-                              {s.starttime.time} - {s.endtime.time}
+                              {s.starttime.time1} - {s.endtime.time1}
                             </p>
                           </div>
                         </div>

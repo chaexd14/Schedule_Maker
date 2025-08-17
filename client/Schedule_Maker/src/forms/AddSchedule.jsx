@@ -1,6 +1,6 @@
-import { Times } from "../data/time";
 import { Day } from "../data/day";
 import { useSchedule } from "../context/ScheduleContext";
+import { useSetting } from "../context/SettingsContext";
 
 function AddSchedule() {
   const {
@@ -10,6 +10,10 @@ function AddSchedule() {
     scheduleMark,
     showForm,
   } = useSchedule();
+
+  const {
+    timeIncrement
+  } = useSetting()
 
   if (!showForm) return null;
   
@@ -76,9 +80,9 @@ function AddSchedule() {
                     handleFormChange("start", parseInt(e.target.value))
                   }
                 >
-                  {Times.map((t, i) => (
-                    <option key={i} value={t.value}>
-                      {t.time}
+                  {timeIncrement.map((t, i) => (
+                    <option key={i} value={t.id}>
+                      {t.time1}
                     </option>
                   ))}
                 </select>
@@ -94,9 +98,9 @@ function AddSchedule() {
                     handleFormChange("end", parseInt(e.target.value))
                   }
                 >
-                  {Times.map((t, i) => (
-                    <option key={i} value={t.value}>
-                      {t.time}
+                  {timeIncrement.map((t, i) => (
+                    <option key={i} value={t.id}>
+                      {t.time1}
                     </option>
                   ))}
                 </select>

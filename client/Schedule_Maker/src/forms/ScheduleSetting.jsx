@@ -7,11 +7,12 @@ function ScheduleSetting() {
     applySettings
   } = useSetting()
   
-  const [selectedFormat, setSelectedFormat] = useState("12"); // default
+  const [clockType, setclockType] = useState("12"); // default
+  const [timeIncrement, setTimeIncrement] = useState("hour")
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    applySettings(selectedFormat);
+    applySettings(clockType, timeIncrement);
   };
 
   return (
@@ -27,13 +28,25 @@ function ScheduleSetting() {
             </h1>
 
             <div className="flex flex-col">
-              <label className="form-label">Time Format</label>
+              <label className="form-label">Clock Type</label>
               <select className="w-full px-2 form-input"
-                value={selectedFormat}
-                onChange={(e) => setSelectedFormat(e.target.value)}
+                value={clockType}
+                onChange={(e) => setclockType(e.target.value)}
               >
                 <option value="24">24 Hour</option>
                 <option value="12">12 Hour</option>
+              </select>
+            </div>
+
+            <div className="flex flex-col">
+              <label className="form-label">Time Increment</label>
+              <select className="w-full px-2 form-input"
+                value={timeIncrement}
+                onChange={(e) => setTimeIncrement(e.target.value)}
+              >
+                <option value="hour">1 Hour</option>
+                <option value="minute30">30 Minutes</option>
+                <option value="minute15">15 Minutes</option>
               </select>
             </div>
 

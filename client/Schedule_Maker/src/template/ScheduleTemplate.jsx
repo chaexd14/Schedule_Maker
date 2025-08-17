@@ -4,29 +4,18 @@ import { useSchedule } from "../context/ScheduleContext";
 import { useSetting } from "../context/SettingsContext";
 import { useEffect } from "react";
 
-
 function ScheduleTemplate() {
+  const { defaultWorkingHour, sched, startTime, endTime, overTime, underTime } = useSchedule();
+  
+  const { timeIncrement } = useSetting();
 
-   const {
-    defaultWorkingHour,
-    sched,
-    startTime,
-    endTime,
-    overTime,
-    underTime,
-  } = useSchedule();
-
-  const {
-    timeformat,
-  } = useSetting()  
-
-    const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
+  const totalRows = defaultWorkingHour + 1 + (overTime + underTime) - underTime;
 
   // Total number of rows in the grid
   useEffect(() => {
     console.log("Total rows:", totalRows);
   }, [totalRows]);
-  
+
   return (
     <>
       <div
@@ -45,8 +34,8 @@ function ScheduleTemplate() {
               {/* Full grid content */}
               <div className="flex flex-col w-full h-full gap-3 p-0 m-0">
                 {/* Days Header */}
-                <div className="flex flex-row items-center w-full">
-                  <div className="h-[50px] w-[100px]" />
+                <div className="flex flex-row items-center w-full pl-[180px]">
+
                   <div
                     className="sticky top-0 z-20 grid w-full grid-cols-7 "
                     style={{ height: "50px" }}
@@ -68,14 +57,14 @@ function ScheduleTemplate() {
                 <div className="flex flex-row justify-center items-center h-[calc(100%-50px)]">
                   {/* Time Column */}
                   <div
-                    className="sticky z-10 w-[100px]"
+                    className="sticky z-10 w-[180px] border-t border-gray-300"
                     style={{
                       display: "grid",
                       gridTemplateRows: `repeat(${totalRows}, 1fr)`,
                       height: "100%",
                     }}
                   >
-                    {timeformat
+                    {timeIncrement
                       .slice(
                         startTime,
                         endTime < defaultWorkingHour
@@ -85,10 +74,14 @@ function ScheduleTemplate() {
                       .map((t, i) => (
                         <div
                           key={i}
-                          className="relative flex items-center justify-center border-t border-gray-300"
+                          className="w-[180px] text-xs flex  items-center justify-center gap-2 border-b border-gray-300"
                         >
-                          <h1 className="absolute -top-[9px] text-[12px] bg-white">
-                            {t.time}
+                          <h1 className="text-[14px] bg-white font-semibold">
+                            {t.time1}
+                          </h1>
+                          <span className="font-semibold">-</span>
+                          <h1 className="text-[14px] bg-white font-semibold">
+                            {t.time2}
                           </h1>
                         </div>
                       ))}

@@ -8,14 +8,14 @@ import { SettingsProvider } from "./context/SettingsContext";
 function App() {
   return (
     <BrowserRouter>
-      <ScheduleProvider>
-        <SettingsProvider>
+      <SettingsProvider>
+        <ScheduleProvider>
           <Routes>
             <Route path="/" element={<ScheduleApp />} />
             <Route path="/print-schedule" element={<DownloadSchedule />} />
           </Routes>
-        </SettingsProvider>
-      </ScheduleProvider>
+        </ScheduleProvider>
+      </SettingsProvider>
     </BrowserRouter>
   );
 }
