@@ -1,5 +1,5 @@
 import "../App.css";
-import ScheduleTemplate from "../template/scheduleTemplate";
+import ScheduleTemplate from "../template/ScheduleTemplate";
 import Squares from "../components/ui/Squares/Squares";
 function DownloadSchedule() {
   return (
@@ -15,13 +15,13 @@ function DownloadSchedule() {
         }}
       >
         <div className="absolute inset-0 z-0 w-full h-full">
-          <Squares
+          {/* <Squares
             speed={0}
             squareSize={70}
             direction="diagonal"
             borderColor="#D1D1E9"
             hoverFillColor="#D1D1E9"
-          />
+          /> */}
         </div>
 
         <h1 className="top-[30px] absolute w-full custom-font text-8xl text-center font-extrabold text-[#2B2C34] pointer-events-auto my-2">

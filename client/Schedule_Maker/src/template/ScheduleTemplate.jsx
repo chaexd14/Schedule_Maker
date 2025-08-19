@@ -143,7 +143,7 @@ function ScheduleTemplate() {
                                 fontWeight: "bold",
                               }}
                             >
-                              {s.starttime.time} - {s.endtime.time}
+                              {s.starttime.time1} - {s.endtime.time1}
                             </p>
                           </div>
                         </div>
