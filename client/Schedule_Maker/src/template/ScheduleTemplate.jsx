@@ -74,7 +74,7 @@ function ScheduleTemplate() {
                       .map((t, i) => (
                         <div
                           key={i}
-                          className="w-[180px] text-xs flex  items-center justify-center gap-2 border-b border-gray-300"
+                          className="w-[180px] text-xs flex  items-center justify-center gap-2 border-b border-gray-200"
                         >
                           <h1 className="text-[14px] bg-white font-semibold">
                             {t.time1}
@@ -89,7 +89,7 @@ function ScheduleTemplate() {
 
                   {/* Schedule Grid */}
                   <div
-                    className="w-full h-full bg-[#D1D1E9]10 relative"
+                    className="w-full h-full bg-[#D1D1E9]10 relative border-t border-gray-300"
                     style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(7, 1fr)",
@@ -100,7 +100,7 @@ function ScheduleTemplate() {
                     {Array.from({ length: 7 * totalRows }).map((_, i) => (
                       <div
                         key={`cell-${i}`}
-                        className="w-full h-full border-t border-l border-gray-300"
+                        className="w-full h-full border-b border-l border-gray-200"
                       />
                     ))}
 

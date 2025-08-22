@@ -1,7 +1,18 @@
 import "../App.css";
 import ScheduleTemplate from "../template/ScheduleTemplate";
 import Squares from "../components/ui/Squares/Squares";
+
 function DownloadSchedule() {
+  // Get today's date
+  const today = new Date();
+
+  // Format it (MM/DD/YY or MM/DD/YYYY depending on your preference)
+  const formattedDate = today.toLocaleDateString("en-US", {
+    month: "numeric",
+    day: "numeric",
+    year: "2-digit", // change to "numeric" if you want 4-digit year
+  });
+  
   return (
     <>
       <div
@@ -25,8 +36,8 @@ function DownloadSchedule() {
         </div>
 
         <h1 className="top-[30px] absolute w-full custom-font text-8xl text-center font-extrabold text-[#2B2C34] pointer-events-auto my-2">
-          Your
-          <span className="text-[#6246EA] font-extrabold text-9xl">Title</span>
+          My
+          <span className="text-[#6246EA] font-extrabold text-9xl">Schedule</span>
         </h1>
 
         <div
@@ -40,7 +51,7 @@ function DownloadSchedule() {
               Made with: <span className="font-semibold">MySchedule.app</span>
             </h3>
             <h3 className="bg-white">
-              Date: <span className="font-semibold">8/15/25</span>
+              Date: <span className="font-semibold">{formattedDate}</span>
             </h3>
           </div>
           <div className="flex items-center justify-center h-fit">
